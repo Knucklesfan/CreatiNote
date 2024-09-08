@@ -1,12 +1,11 @@
 #!/bin/bash
-function build-creatinote () {
+function build-creatinote() {
     docker build -t $NAME .
 }
-function execute-creatinote () {
-    docker run -it --rm -p 8080:8080 --name $INSTANCE $NAME;
+function execute-creatinote() {
+    docker run -it --rm -p 8080:8080 --name $INSTANCE $NAME
 }
-if [[ "$*" == *"r"* ]]
-then
+if [[ "$*" == *"r"* ]]; then
     echo "Building a RELEASE BUILD!"
     NAME=creatinote-release
     INSTANCE=creatinote-release-instance
@@ -17,8 +16,7 @@ else
 
 fi
 if build-creatinote; then
-    if [[ "$*" == *"x"* ]]
-    then
+    if [[ "$*" == *"x"* ]]; then
         echo "Build finished, executing:"
         execute-creatinote
     else
