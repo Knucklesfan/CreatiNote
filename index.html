@@ -1,60 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Chat Example</title>
-    <script type="text/javascript">
-      window.onload = function () {
-        var conn;
-        var msg = document.getElementById("msg");
-        var log = document.getElementById("log");
-
-        function appendLog(item) {
-          var doScroll =
-            log.scrollTop > log.scrollHeight - log.clientHeight - 1;
-          log.appendChild(item);
-          if (doScroll) {
-            log.scrollTop = log.scrollHeight - log.clientHeight;
-          }
-        }
-
-        document.getElementById("form").onsubmit = function () {
-          if (!conn) {
-            return false;
-          }
-          if (!msg.value) {
-            return false;
-          }
-          conn.send(msg.value);
-          msg.value = "";
-          return false;
-        };
-
-        if (window["WebSocket"]) {
-          conn = new WebSocket("ws://" + document.location.host + "/ws");
-          conn.onclose = function (evt) {
-            var item = document.createElement("div");
-            item.innerHTML = "<b>Connection closed.</b>";
-            appendLog(item);
-          };
-          conn.onmessage = function (evt) {
-            var messages = evt.data.split("\n");
-            for (var i = 0; i < messages.length; i++) {
-              var item = document.createElement("div");
-              item.innerText = messages[i];
-              appendLog(item);
+<head>
+<title>Chat Example</title>
+<script type="text/javascript">
+window.onload = function () {
+    var cacheTable = [] //this is a really, REALLY basic caching table, that tells the renderer when converting addresses from log to regular, what to skip over by value
+    var conn;
+    var msg = document.getElementById("rawsource"); //the raw, markdown source
+    var log = document.getElementById("log"); //the visible source to the user
+    // function cursorUpdated(selectionStart,selectionEnd) {
+    //     if (!conn) {
+    //         return false;
+    //     }
+    //     conn.send([selectionStart,selectionEnd]);
+    //     return false;
+    // }
+    function checkCached(address) { //checks the character location to see if it's cached
+        for(let i = 0; i < cacheTable.length; i+=2) {
+            if(cacheTable[i] === address) {
+                return true;
             }
-          };
-        } else {
-          var item = document.createElement("div");
-          item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
-          appendLog(item);
         }
-      };
-    </script>
-    <style type="text/css">
-      html {
-        overflow: hidden;
-      }
+        return false;
+    }
+    function render() { //welcome to the crackhead zone
+        //this is a VERY small proof of concept of our renderer, the real deal will be more than just this ofc
+        //renders to the log, but only at the specified index in the text, and only how much was told to be rendered, and removes any user typed code as well
+        //or at least, thats what its gonna do when its done, for now it just renders the whole document
+        const text = msg.innerText
+        log.innerHTML = "";
+        const split = text.split("\n")
+        let textCache = "";
+        let componentCache = "";
+        let element = null;
+        // console.log(text.length + " " + split.length)
+
+        for(let i = 0; i < split.length; i++) {
+            //this runs for every line of the innertext
+            //implement this code based on https://www.markdownguide.org/cheat-sheet/
+            //here is the basic idea that I had:
+            //textcache works as the cache for text, wherein all text that is written to be added to the document is written there
+            //component cache is used while working on making an element: say for example you're writing a <a>, then during the step where the url is being written,
+            //the <a>'s url is stored in componentcache, before being finished and actually being added to the element which is made and stored in element
+            // console.log(split[i].length)
+
+            mode = 0; //this is the character mode setter, and depending on the setting, we parse in a few different ways:
+                    // -1 - Skip this character in parsing, and treat as a normal char
+                    // 0 - Run normally, append characters if need be, but other than that we chillin
+                    // 1 - We are in text mod mode, open a span and wait for a span to end here because this is just basic text editing stuff
+                    // 2 - We are in URL mode and in particular are setting the URL's name during creation
+                    // 3 - We are in URL mode and in particular are setting the URL's URL during creation
+                    // 4 - We are in widget mode and awaiting a second $ to generate the widget
+                    // 5 - We are in italic mode and awaiting another asterisk
+                    // 6 - We are in bold mode and awaiting another pair
+                    // 7 - We are in bold+italic mode and awaiting another triple
+                    // 8 - We are in Strikethrough mode and awaiting another double
+                    // 9 - We are in highlight mode and awaiting another double
+                    // 10 - We are in Image mode and in particular are setting the Image's alt-text during creation
+                    // 11 - We are in Image mode and in particular are setting the Image's URL during creation
+                    // 12 - We are in subscript mode and awaiting next char
+                    // 13 - We are in superscript mode and awaiting next char
+                    // 14 - We are in checkbox mode and awaiting closure
+                for(let a = 0; a < split[i].length; a++) {
+                //this runs for every char of a list and basically, we're gonna iterate on this
+                if(mode > -1) {
+                    switch(split[i].charAt(a)) { //switch over the chars, we doin basic char detection time boys
+                        case '\\': { //if we backslash, then skip the next character in parsing
+                            mode = -1;
+                        }break;
+                        case '@': {
+                            if(split[i].charAt(a+1) == '{') {
+                                mode = 1;
+                            }
+                            else {
+                                if(mode == 0) {
+                                    textCache += '@';
+                                }
+                                else {
+                                    componentCache+= '@'
+                                }
+                            }
+                        }break;
+                        case '[': {
+                            if(mode == 0) {
+                                // console.log(split[i].charAt(a+1))
+                                if(split[i].charAt(a+1) == '!' || split[i].charAt(a+1) == ' ') {
+                                    // console.log("checkbox")
+                                    mode = 14;
+                                    element = document.createElement("input");
+                                    element.setAttribute("type","checkbox");
+                                    element.setAttribute("name","checkbox");
+
+                                    if(split[i].charAt(a+1) == '!') {
+                                        element.setAttribute("checked","true");
+                                    }
+                                }
+                                else {
+                                    // console.log("link")
+                                    mode = 2;
+                                    element = document.createElement("a");
+                                }
+                            }
+                        }break;
+                        case ']': {
+                            switch(mode) {
+                                case 14: {
+                                    mode = 0;
+                                    textCache += element.outerHTML
+                                    componentCache = "";    
+                                }break;
+                                case 2: {
+                                    mode = 3;
+                                    // console.log(componentCache)
+                                    element.innerText = componentCache;
+                                    componentCache = "";
+                                    a++;
+                                }
+                            }
+                        }break;
+                        case ')': { //since there is no case where the letter "(" is parsed, we can basically just skip it and treat it as a normal char
+                            switch(mode) {
+                                case 3: {       
+                                    mode = 0;
+                                    element.setAttribute("href",componentCache);
+                                    textCache += element.outerHTML
+                                    // console.log(componentCache)
+                                }break;
+                            }
+                        }break;
+                        default: {
+                            if(mode == 0) {
+                                textCache += split[i].charAt(a);
+                            }
+                            else {
+                                componentCache+=split[i].charAt(a);
+                            }
+                        }break;
+                    }
+                    // log.innerHTML += split[i].charAt(a);
+
+                }
+                else {
+                    mode = 0;
+                }
+            }
+            textCache += "<br>"
+            
+        }
+        log.innerHTML = textCache
+        
+
+    }
+    // document.getElementById("form").onsubmit = function () {
+    //     if (!conn) {
+    //         return false;
+    //     }
+    //     if (!msg.value) {
+    //         return false;
+    //     }
+    //     conn.send(msg.value);
+    //     msg.value = "";
+    //     return false;
+    // };
+    log.addEventListener('keydown',e=>{
+        render()
+        // const selection = window.getSelection();
+        // let ranges = [];
+
+        // for (let i = 0; i < selection.rangeCount; i++) {
+        //     selecteditem = selection.getRangeAt(i);
+        //     console.log(selecteditem.commonAncestorContainer.nodeName);
+        // }
+        // const range = selection.getRangeAt(0);
+        // console.log(getPosition(e.target));
+        // // Check if the selection contains a span
+        // // if (range.commonAncestorContainer.tagName.toLowerCase() === 'span') {
+        //     // Expand the selection to include the entire span
+        //     // range.setStartBefore(range.commonAncestorContainer);
+        //     // range.setEndAfter(range.commonAncestorContainer);
+        //     // selection.removeAllRanges();
+        //     // selection.addRange(range);
+        // // }
+
+        // // Process the normalized selection (e.g., get the selected text, apply formatting)
+        // const selectedText = selection.toString();
+        // console.log(selectedText);
+        // // cursorUpdated(selRange.startOffset,selRange.startOffset)
+    })
+    log.addEventListener('mouseup',e=>{
+        // cursorUpdated(e.target.selectionStart,e.target.selectionEnd)
+    })
+    // if (window["WebSocket"]) {
+    //     conn = new WebSocket("ws://" + document.location.host + "/ws");
+    //     conn.onclose = function (evt) {
+    //     };
+    //     conn.onmessage = function (evt) {
+    //         var messages = evt.data;
+    //         console.log(messages)
+    //     };
+    // } else {
+    //     var item = document.createElement("div");
+    //     item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
+    //     appendLog(item);
+    // }
+};
+</script>
+<style type="text/css">
+html {
+    overflow: hidden;
+}
 
       body {
         overflow: hidden;
@@ -65,34 +219,41 @@
         background: gray;
       }
 
-      #log {
-        background: white;
-        margin: 0;
-        padding: 0.5em 0.5em 0.5em 0.5em;
-        position: absolute;
-        top: 0.5em;
-        left: 0.5em;
-        right: 0.5em;
-        bottom: 3em;
-        overflow: auto;
-      }
+#log {
+    background: white;
+    margin: 0;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    position: absolute;
+    top: 0.5em;
+    left: 0.5em;
+    right: 0.5em;
+    bottom: 3em;
+    overflow: auto;
+    resize: none;
+}
 
-      #form {
-        padding: 0 0.5em 0 0.5em;
-        margin: 0;
-        position: absolute;
-        bottom: 1em;
-        left: 0px;
-        width: 100%;
-        overflow: hidden;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="log"></div>
-    <form id="form">
-      <input type="submit" value="Send" />
-      <input type="text" id="msg" size="64" autofocus />
-    </form>
-  </body>
+#form {
+    padding: 0 0.5em 0 0.5em;
+    margin: 0;
+    position: absolute;
+    bottom: 1em;
+    left: 0px;
+    width: 100%;
+    overflow: hidden;
+}
+
+</style>
+</head>
+<body>
+<div id="rawsource" style="white-space: pre;">this is a test of the text area and what it can do?
+    [!] does it work?
+    [title](https://www.example.com)
+
+    The following is a giant list of text, that nobody cares about but is used to test the system. Is it pointless? [!] Is it functional? [ ]
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+
+</div>
+<div id="log" contenteditable="true">
+</div>
+</body>
 </html>
