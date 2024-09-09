@@ -47,34 +47,47 @@
             //component cache is used while working on making an element: say for example you're writing a <a>, then during the step where the url is being written,
             //the <a>'s url is stored in componentcache, before being finished and actually being added to the element which is made and stored in element
             // console.log(split[i].length)
-
-            mode = 0; //this is the character mode setter, and depending on the setting, we parse in a few different ways:
-            // -1 - Skip this character in parsing, and treat as a normal char
+            let skip = false; //if true, we skip this char during parsing, and treat it as a normal char
+            let mode = 0; //this is the character mode setter, and depending on the setting, we parse in a few different ways:
             // 0 - Run normally, append characters if need be, but other than that we chillin
             // 1 - We are in text mod mode, open a span and wait for a span to end here because this is just basic text editing stuff
             // 2 - We are in URL mode and in particular are setting the URL's name during creation
             // 3 - We are in URL mode and in particular are setting the URL's URL during creation
             // 4 - We are in widget mode and awaiting a second $ to generate the widget
-            // 5 - We are in italic mode and awaiting another asterisk
-            // 6 - We are in bold mode and awaiting another pair
-            // 7 - We are in bold+italic mode and awaiting another triple
-            // 8 - We are in Strikethrough mode and awaiting another double
-            // 9 - We are in highlight mode and awaiting another double
+            // 5 - We are in Style mode, but otherwise are writing normal text
+            // 6 - unusued
+            // 7 - unusued
+            // 8 - unusued
+            // 9 - unusued
             // 10 - We are in Image mode and in particular are setting the Image's alt-text during creation
             // 11 - We are in Image mode and in particular are setting the Image's URL during creation
-            // 12 - We are in subscript mode and awaiting next char
-            // 13 - We are in superscript mode and awaiting next char
+            // 12 - unusued
+            // 13 - unusued
             // 14 - We are in checkbox mode and awaiting closure
+
+            let styleByte = 0; //style is handled effectively as a very small bitwise int, and we just handle that as is
+            //00000000
+            //IBMSMWHU
+            //I - Italic 7
+            //B - Bold 6
+            //M - Code 5
+            //S - Strikethrough 4
+            //M - Subscript 3
+            //W - Superscript 2
+            //H - Highlight 1
+            //U - Underline 0
             for (let a = 0; a < split[i].length; a++) {
+              console.log("Mode: " + mode)
               //this runs for every char of a list and basically, we're gonna iterate on this
-              if (mode > -1) {
+              if (!skip) {
                 switch (
                   split[i].charAt(a) //switch over the chars, we doin basic char detection time boys
                 ) {
                   case "\\":
                     {
+                      console.log("skipping next char")
                       //if we backslash, then skip the next character in parsing
-                      mode = -1;
+                      skip = true;
                     }
                     break;
                   case "@":
@@ -144,6 +157,7 @@
                             mode = 0;
                             element.setAttribute("href", componentCache);
                             textCache += element.outerHTML;
+                            componentCache = "";
                             // console.log(componentCache)
                           }
                           break;
@@ -151,22 +165,166 @@
                     }
                     break;
                   case "*":
-                    if (mode == 0) {
-                      mode = 5; // Enter italic mode
-                      element = document.createElement("i"); // Create <i> tag for italics
-                      componentCache = ""; // Start fresh for the italic content
-                    } else if (mode == 5) {
-                      mode = 0; // Exit italic mode
-                      element.innerText = componentCache; // Set italic text content
-                      textCache += element.outerHTML; // Add the <i> tag and content to the textCache
-                      componentCache = ""; // Clear component cache for future use
-                    }
+                    //for the folks at home confused, here's a quick breakdown of this lil equation: styleByte>>6&1
+                    //tldr; styleByte is our byte described above, and we shift it right 6 times, 
+                    //such that the 7th bit is the last bit in the byte, 
+                    //and then AND it by 1 to make sure it's equal to 1 to determine if that bit is enabled or disabled.
+                    //We could just hardcode the AND values here, but in favor of ease of reading, i won't do that lol
+                    //its basic chemistry
+                      if(split[i].charAt(a+1) == '*' && !(styleByte>>6&1)) { //if the next character is a star, and bit 6 of the styleByte is NOT set to 1
+                        componentCache+="<strong>"
+                        styleByte = styleByte^(1<<6);
+                        a++; //add, so that we avoid parsing the next *
+                      }
+                      else if(!(styleByte>>7&1) && split[i].charAt(a+1) != '*') {
+                        componentCache+="<i>"
+                          styleByte = styleByte^(1<<7);
+                      }
+                      else {
+                        if((styleByte>>7&1) && split[i].charAt(a+1) != '*') {
+                          componentCache+="</i>"
+                          styleByte = styleByte^(1<<7);
+                        }
+                        else if(split[i].charAt(a+1) == '*' && styleByte>>6&1) {
+                          componentCache+="</strong>"
+                          styleByte = styleByte^(1<<6);
+                          a++; //add, so that we avoid parsing the next *
+
+                        }
+                        if( styleByte == 0) {
+
+                          styleByte = 0;
+                          textCache += componentCache;
+                          componentCache = "";
+                        }
+                      }
+                      
+                    // } else if (mode == 5) {
+                    //   mode = 0; // Exit italic mode
+                    //   element.innerText = componentCache; // Set italic text content
+                    //   textCache += element.outerHTML; // Add the <i> tag and content to the textCache
+                    //   componentCache = ""; // Clear component cache for future use
+                    // }
                     break;
+                  case '~':{
+                    if(split[i].charAt(a+1) == '~' && !(styleByte>>4&1)) { //if the next character is a star, and bit 6 of the styleByte is NOT set to 1
+                        componentCache+="<s>"
+                        styleByte = styleByte^(1<<4);
+                        a++; //add, so that we avoid parsing the next *
+                      }
+                      else if(!(styleByte>>3&1) && split[i].charAt(a+1) != '~') {
+                        componentCache+="<sup>"
+                          styleByte = styleByte^(1<<3);
+                      }
+                      else {
+                        if((styleByte>>3&1) && split[i].charAt(a+1) != '~') {
+                          componentCache+="</sup>"
+                          styleByte = styleByte^(1<<3);
+                        }
+                        else if(split[i].charAt(a+1) == '~' && styleByte>>4&1) {
+                          componentCache+="</s>"
+                          styleByte = styleByte^(1<<4);
+                          a++; //add, so that we avoid parsing the next *
+
+                        }
+                        if( styleByte == 0) {
+
+                          styleByte = 0;
+                          textCache += componentCache;
+                          componentCache = "";
+                        }
+                      }
+
+                  }break;
+                  case '`':{
+                    if(!(styleByte>>5&1)) { //if the next character is a ~, and bit 4 of the styleByte is NOT set to 1
+                        componentCache+="<code>"
+                        styleByte = styleByte^(1<<5);
+                        a++; //add, so that we avoid parsing the next ~
+                      }
+                      else {
+                        if(styleByte>>5&1) {
+                          componentCache+="</code>"
+                          styleByte = styleByte^(1<<5);
+                          a++; //add, so that we avoid parsing the next *
+
+                        }
+                        if( styleByte == 0) {
+                          styleByte = 0;
+                          textCache += componentCache;
+                          componentCache = "";
+                        }
+                      }
+                  }break;
+                  case '=':{
+                    if(split[i].charAt(a+1) == '=' && !(styleByte>>1&1)) { //if the next character is a ~, and bit 4 of the styleByte is NOT set to 1
+                        componentCache+="<span class=\"highlight\">"
+                        styleByte = styleByte^(1<<1);
+                        a++; //add, so that we avoid parsing the next ~
+                      }
+                      else {
+                        if(split[i].charAt(a+1) == '=' && styleByte>>1&1) {
+                          componentCache+="</span>"
+                          styleByte = styleByte^(1<<1);
+                          a++; //add, so that we avoid parsing the next *
+
+                        }
+                        if( styleByte == 0) {
+                          styleByte = 0;
+                          textCache += componentCache;
+                          componentCache = "";
+                        }
+                      }
+                  }break;
+                  case '^':{
+                    if(!(styleByte>>2&1)) { //if the next character is a ~, and bit 4 of the styleByte is NOT set to 1
+                        componentCache+="<sub>"
+                        styleByte = styleByte^(1<<2);
+                      }
+                      else {
+                        if(styleByte>>2&1) {
+                          componentCache+="</sub>"
+                          styleByte = styleByte^(1<<2);
+
+                        }
+                        if( styleByte == 0) {
+                          styleByte = 0;
+                          textCache += componentCache;
+                          componentCache = "";
+                        }
+                      }
+                  }break;
+                  case '_':{
+                    if(split[i].charAt(a+1) == '_' && !(styleByte>>0&1)) { //if the next character is a star, and bit 6 of the styleByte is NOT set to 1
+                        componentCache+="<u>"
+                        styleByte = styleByte^(1<<0);
+                        a++; //add, so that we avoid parsing the next *
+                      }
+                      else {
+                        if(split[i].charAt(a+1) == '_' && styleByte>>0&1) {
+                          componentCache+="</s>"
+                          styleByte = styleByte^(1<<0);
+                          a++; //add, so that we avoid parsing the next *
+
+                        }
+                        if( styleByte == 0) {
+
+                          styleByte = 0;
+                          textCache += componentCache;
+                          componentCache = "";
+                        }
+                      }
+
+                  }break;
+
                   default:
                     {
-                      if (mode == 0) {
+                      if (mode <= 0 && styleByte == 0) {
                         textCache += split[i].charAt(a);
+                        console.log("typing " + split[i].charAt(a))
+
                       } else {
+                        console.log("componenting " + split[i].charAt(a))
                         componentCache += split[i].charAt(a);
                       }
                     }
@@ -174,7 +332,14 @@
                 }
                 // log.innerHTML += split[i].charAt(a);
               } else {
-                mode = 0;
+                if (mode == 0 && styleByte == 0) {
+                    textCache += split[i].charAt(a);
+
+                  } else {
+                    console.log("componenting " + split[i].charAt(a))
+                    componentCache += split[i].charAt(a);
+                  }
+                  skip=false;
               }
             }
             textCache += "<br>";
@@ -275,22 +440,24 @@
   </head>
   <body>
     <div id="rawsource" style="white-space: pre">
-      This is a test of the text area and what it can do. 
-      [ ] This is an unchecked checkbox. 
-      [!] This is a checked checkbox. Here is a
-      [link](https://www.example.com) to example.com. 
-      Is this *italic* text working? 
-      Does **bold** text display correctly? 
-      How about ***bold and italic*** together? 
-      Let's try a ~~strikethrough~~ as well. 
-      Does the renderer handle special formatting like: 
-      1. Lists 
-      2. [ ] Nested checkboxes
-      3. [!] Another checked checkbox? 
-      Here’s a bit of *formatted* and **mixed** text. 
-      Does it handle long text like: Lorem ipsum dolor sit amet,
-      consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
-      dolore magna aliqua.
+      Hello **world**!
+      *this is a test, so see if **mixed stuff** works, if at all...*
+      How about ***bold and italic*** together?
+      **this is a *sentence* that tests a few things**
+      \*\*\*this shouldnt be bold\*\*\*
+      **what if we give it **dumb stupid code** that shouldnt work?**\*
+      If you want to draw a textbox, you can do it **like this**
+      [!] Checked! \[!\]
+      [ ] Unchecked \[ \]
+
+      But hey, what if you want a link?
+      [DOWNLOAD MORE RAM \(FREE\)\!\!\!](https://example.com)
+      
+      Woooooooah dude, howd you do that????
+      Oh, it's actually pretty easy:
+      \[DOWNLOAD MORE RAM \\(FREE\\\)\\!\\!\\!\]\(https://example.com\)
+      x^2^ or x~2~ i dont ~~understand either way~~ but hey, __thats **OKAY**__
+      <!-- I *think* that this code is working, but **IM NOT SURE.** -->
     </div>
     <div id="log" contenteditable="true"></div>
   </body>
