@@ -171,17 +171,10 @@ function render() {
                       text.charAt(a + 1) == "["
                     ) {
                       // we makin an image here
-                      mode = 10;
-                      element = document.createElement("image");
-  
-                      if (text.charAt(a + 1) == "!") {
-                        element.setAttribute("checked", "true");
+                        mode = 10;
+                        element = document.createElement("image");
+                        a++;
                       }
-                    } else {
-                      // console.log("link")
-                      mode = 2;
-                      element = document.createElement("a");
-                    }
                   }
                 }
                 break;  
@@ -202,6 +195,12 @@ function render() {
                     element.innerText = componentCache;
                     componentCache = "";
                     a++;
+                  }break;
+                  case 10: {
+                    mode = 11;
+                    element.setAttribute("alt", componentCache);
+                    componentCache = "";
+                    a++;
                   }
                 }
               }
@@ -219,6 +218,13 @@ function render() {
                       // console.log(componentCache)
                     }
                     break;
+                    case 11: {
+                        mode = 0;
+                        element.setAttribute("src", componentCache);
+                        textCache += element.outerHTML;
+                        componentCache = "";
+  
+                    }
                 }
               }
               break;
