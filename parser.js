@@ -185,7 +185,7 @@ function render() {
                   }
                 }
                 break;  
-            }
+            
             case "]":
               {
                 switch (mode) {
