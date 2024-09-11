@@ -9,9 +9,40 @@
       window.onload = function () {
         var cacheTable = []; //this is a really, REALLY basic caching table, that tells the renderer when converting addresses from log to regular, what to skip over by value
         var conn;
+        //The chunking system is how we manage sending bulk amounts of text over the network in a digestible, easy and most importantly: FAST manner. 
+        //We batch text up into several different chunks that are sent to the client as chunks
 
-        msg = document.getElementById("rawsource"); //the raw, markdown source
-        log = document.getElementById("log"); //the visible source to the user
+
+        let chunks = [
+          `
+            Hello **world**!
+            *this is a test, so see if **mixed stuff** works, if at all...*
+            How about ***bold and italic*** together?
+            **this is a *sentence* that tests a few things**
+            \*\*\*this shouldnt be bold\*\*\*
+            **what if we give it **dumb stupid code** that shouldnt work?**\*
+            If you want to draw a textbox, you can do it **like this**
+            [!] Checked! \[!\]
+            [ ] Unchecked \[ \]
+          `, //chunk 0
+          `
+            But hey, what if you want a link?
+            [DOWNLOAD MORE RAM \(FREE\)\!\!\!](https://example.com)
+            href
+            Woooooooah dude, howd you do that????
+            Oh, it's actually pretty easy:
+            \[DOWNLOAD MORE RAM \\(FREE\\\)\\!\\!\\!\]\(https://example.com\)
+            ![The MacOS 10.5 Default wallpaper](10-5.png)
+            x^2^ or x~2~ i dont ~~understand either way~~ but hey, __thats **OKAY**__
+
+          `, //chunk 1
+          `
+            And hey, maybe the chunk system works, maybe it doesnt! Who caaaares?
+            ...Actually, I care because *this* is how the project __works__
+          `, //chunk 2
+        ]
+        let msg = document.getElementById("rawsource"); //the raw, markdown source
+        let log = document.getElementById("log"); //the visible source to the user
         // Made the two above into global variables because who cares
 
         // function cursorUpdated(selectionStart,selectionEnd) {
@@ -42,8 +73,56 @@
         //     msg.value = "";
         //     return false;
         // };
-        log.addEventListener("keydown", (e) => {
+        function getCaretIndex(element) {
+          let position = 0;
+          const isSupported = typeof window.getSelection !== "undefined";
+          if (isSupported) {
+            const selection = window.getSelection();
+            if (selection.rangeCount !== 0) {
+              const range = window.getSelection().getRangeAt(0);
+              const preCaretRange = range.cloneRange();
+              preCaretRange.selectNodeContents(element);
+              preCaretRange.setEnd(range.endContainer, range.endOffset);
+              position = preCaretRange.toString().length;
+            }
+          }
+          return position;
+        }
+        function textboxUpdated(e) {
+          selection = getCaretIndex(log)
+          if(e.type == "keydown") {
+            e.preventDefault();
+            console.log(e.charCode);
+          }
+          console.log(e)
           render();
+        }
+        let renderText = "";
+        for(let i = 0; i < chunks.length; i++) {
+          //add a system that adds the different chunks from the chunks array in here.
+          //chunks are determined programmatically by the backend, but during editing they can grow to be as big as the user wants
+          //(within reason, if too much data is inserted past a certain level, chunks will be forcibly regenerated and resent out to all clients)
+          renderText += "<div id=\"chunk"+i+"\">"+render(chunks[i])+"</div>";
+          //for this for loop, we need some way to load these chunks in and add them to the log object, with each wrapped with <span>
+        }
+        log.innerHTML=renderText;
+        log.addEventListener("input", (e)=> {
+          caret = getCaretIndex(log);
+          chunk = 0
+          const activeTextarea = document.activeElement;
+          for(let i = 0; i < chunks.length; i++) {
+            console.log(caret-chunks[i].length)
+            if(caret-chunks[i].length < 0) {
+              break;
+            }
+            chunk++;
+            caret -= chunks[i].length
+
+          }
+          console.log(chunk)
+          console.log("EDITED")
+        })
+
           // const selection = window.getSelection();
           // let ranges = [];
 
@@ -66,10 +145,6 @@
           // const selectedText = selection.toString();
           // console.log(selectedText);
           // // cursorUpdated(selRange.startOffset,selRange.startOffset)
-        });
-        log.addEventListener("mouseup", (e) => {
-          // cursorUpdated(e.target.selectionStart,e.target.selectionEnd)
-        });
         // if (window["WebSocket"]) {
         //     conn = new WebSocket("ws://" + document.location.host + "/ws");
         //     conn.onclose = function (evt) {
@@ -124,27 +199,10 @@
     </style>
   </head>
   <body>
-    <div id="rawsource" style="white-space: pre">
-      Hello **world**!
-      *this is a test, so see if **mixed stuff** works, if at all...*
-      How about ***bold and italic*** together?
-      **this is a *sentence* that tests a few things**
-      \*\*\*this shouldnt be bold\*\*\*
-      **what if we give it **dumb stupid code** that shouldnt work?**\*
-      If you want to draw a textbox, you can do it **like this**
-      [!] Checked! \[!\]
-      [ ] Unchecked \[ \]
-
-      But hey, what if you want a link?
-      [DOWNLOAD MORE RAM \(FREE\)\!\!\!](https://example.com)
-      href
-      Woooooooah dude, howd you do that????
-      Oh, it's actually pretty easy:
-      \[DOWNLOAD MORE RAM \\(FREE\\\)\\!\\!\\!\]\(https://example.com\)
-      ![The MacOS 10.5 Default wallpaper](10-5.png)
-      x^2^ or x~2~ i dont ~~understand either way~~ but hey, __thats **OKAY**__
-      <!-- I *think* that this code is working, but **IM NOT SURE.** -->
+    <div id="chunkbase">
+        <div id="log" contenteditable="true"></div>
+      </div>
+  
     </div>
-    <div id="log" contenteditable="true"></div>
   </body>
 </html>
