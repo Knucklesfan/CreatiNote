@@ -106,7 +106,7 @@ function render(text) {
   //H - Highlight 1
   //U - Underline 0
   for (let a = 0; a < text.length; a++) {
-    console.log("Mode: " + mode);
+    console.log("Mode: " + skip);
     //this runs for every char of a list and basically, we're gonna iterate on this
     if (!skip) {
       switch (
@@ -297,6 +297,7 @@ function render(text) {
       }
       // log.innerHTML += text.charAt(a);
     } else {
+      console.log("skipping " + text.charAt(a))
       if (mode == 0 && styleByte == 0) {
         textCache += text.charAt(a);
       } else {
