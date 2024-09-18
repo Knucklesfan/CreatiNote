@@ -97,31 +97,36 @@
           console.log(e)
           render();
         }
-        let renderText = "";
         for(let i = 0; i < chunks.length; i++) {
           //add a system that adds the different chunks from the chunks array in here.
           //chunks are determined programmatically by the backend, but during editing they can grow to be as big as the user wants
           //(within reason, if too much data is inserted past a certain level, chunks will be forcibly regenerated and resent out to all clients)
-          renderText += "<div id=\"chunk"+i+"\">"+render(chunks[i])+"</div>";
+          let innerText = render(chunks[i]);
+          let elm = document.createElement("div");
+          elm.setAttribute("contentEditable",true);
+          elm.innerHTML = innerText;
+          elm.addEventListener("input",(e)=>{
+            console.log("input in chunk #")
+          })
+          log.appendChild(elm);          
           //for this for loop, we need some way to load these chunks in and add them to the log object, with each wrapped with <span>
         }
-        log.innerHTML=renderText;
-        log.addEventListener("input", (e)=> {
-          caret = getCaretIndex(log);
-          chunk = 0
-          const activeTextarea = document.activeElement;
-          for(let i = 0; i < chunks.length; i++) {
-            console.log(caret-chunks[i].length)
-            if(caret-chunks[i].length < 0) {
-              break;
-            }
-            chunk++;
-            caret -= chunks[i].length
+        // log.addEventListener("input", (e)=> {
+        //   // caret = getCaretIndex(log);
+        //   // chunk = 0
+        //   // const activeTextarea = document.activeElement;
+        //   // for(let i = 0; i < chunks.length; i++) {
+        //   //   console.log(caret-chunks[i].length)
+        //   //   if(caret-chunks[i].length < 0) {
+        //   //     break;
+        //   //   }
+        //   //   chunk++;
+        //   //   caret -= chunks[i].length
 
-          }
-          console.log(chunk)
-          console.log("EDITED")
-        })
+        //   // }
+        //   // console.log(chunk)
+        //   // console.log("EDITED")
+        // })
 
           // const selection = window.getSelection();
           // let ranges = [];
