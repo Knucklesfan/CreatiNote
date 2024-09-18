@@ -10,7 +10,7 @@ import { Editor, Transforms, Element } from 'slate'
 const initialValue = [
   {
     type: 'paragraph',
-    children: [{ text: 'A line of text in a paragraph.' }],
+    children: [{ text: 'hello world! this is a \'test\' of how to use this' }],
   },
 ]
 // Define a default element to be our text
@@ -29,13 +29,29 @@ const Leaf = props => {
   return (
     <span
       {...props.attributes}
-      style={{ fontWeight: props.leaf.bold ? 'bold' : 'normal'}}
+      style={{
+        fontWeight: props.leaf.b ? 'bold' : 'normal',
+        fontStyle: props.leaf.i?'italic':'normal',
+        textDecoration: props.leaf.u?'underline':'normal'
+      }}
     >
       {props.children}
     </span>
   )
 }
+const isMarkActive = (editor, format) => {
+  const marks = Editor.marks(editor)
+  return marks ? marks[format] === true : false
+}
 
+function toggleMark(editor,mark) {
+  if(isMarkActive(editor,mark)) {
+    Editor.removeMark(editor, mark)
+  }
+  else {
+    Editor.addMark(editor, mark, true)
+  }
+}
 function App() {
   const [editor] = useState(() => withReact(createEditor()))
   const renderElement = useCallback(props => {
@@ -74,17 +90,19 @@ function App() {
       
                   // When "B" is pressed, bold the text in the selection.
                   case 'b': {
+                    toggleMark(editor,"b");
                     event.preventDefault()
-                    Editor.addMark(editor, 'bold', true)
                     break
                   }
                   case 'i': {
                     event.preventDefault()
-                    Editor.addMark(editor, 'ital', true)
+                    toggleMark(editor,"i");
                     break
-
-
-
+                  }
+                  case 'u': {
+                    event.preventDefault()
+                    toggleMark(editor,"u");
+                    break;
                   }
                   default :{
                     break;//to stop vscode from complaining, we gotta have a default case
