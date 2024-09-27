@@ -9,3 +9,4 @@ sudo apt install nodejs npm
 echo ${GREEN}Installing yarn npm ${ENDCOLOR}
 sudo npm install yarn
 sudo npm install react react-scripts
+sudo npm install create-react-app
