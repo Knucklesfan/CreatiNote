@@ -1,6 +1,6 @@
 import './App.css';
 // Import React dependencies.
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 // Import the Slate editor factory.
 import { createEditor } from 'slate'
 
@@ -53,6 +53,27 @@ function toggleMark(editor,mark) {
   }
 }
 function App() {
+  useEffect(() => {  
+    var apiUrl = 'getsheet';
+    fetch(apiUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        token: "example",
+        document: "testdoc",
+      })
+    }).then(response => {
+      return response.json();
+    }).then(data => {
+      // Work with JSON data here
+      console.log(data);
+    }).catch(err => {
+    });
+ 
+    // If you want to perform cleanup on unmount, return a function 
+    return () => { 
+      console.log('Component will unmount'); 
+    }; 
+  }, []); // The empty dependency array ensures this runs only on mount 
   const [editor] = useState(() => withReact(createEditor()))
   const renderElement = useCallback(props => {
     switch (props.element.type) {
@@ -65,7 +86,22 @@ function App() {
   const renderLeaf = useCallback(props => {
     return <Leaf {...props} />
   }, [])
-  return <Slate editor={editor} initialValue={initialValue} >
+  return <Slate
+   editor={editor} 
+   initialValue={initialValue} 
+   onChange={value => {
+
+    const isAstChange = editor.operations.some(
+      op => 'set_selection' !== op.type
+    )
+    if (isAstChange) {
+      // Save the value to Local Storage.
+      const content = JSON.stringify(value)
+      console.log(value);
+
+    }
+  }}        
+   >
           <Editable 
               renderElement={renderElement}
               renderLeaf={renderLeaf}
@@ -104,12 +140,14 @@ function App() {
                     toggleMark(editor,"u");
                     break;
                   }
+                  
                   default :{
                     break;//to stop vscode from complaining, we gotta have a default case
                   }
                 }
               }}
           />
+
           </Slate>
 }
 
