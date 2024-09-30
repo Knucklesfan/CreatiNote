@@ -1,8 +1,5 @@
 #!/bin/bash
 function build-creatinote() {
-    cd frontend
-    yarn build
-    cd ..
     docker build -t $NAME .
 }
 function execute-creatinote() {

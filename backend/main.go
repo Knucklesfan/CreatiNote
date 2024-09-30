@@ -48,6 +48,7 @@ func serveDocument(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	fmt.Println("Server is running, currently accessible from http://127.0.0.1:8080...\n\nPress CTRL-C to close.")
 	flag.Parse()
 	hub := newHub()
 	go hub.run()
