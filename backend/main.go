@@ -22,7 +22,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	http.ServeFile(w, r, "./frontend/build/"+r.URL.Path)
+	http.ServeFile(w, r, "/app/static"+r.URL.Path)
 }
 func serveDocument(w http.ResponseWriter, r *http.Request) {
 	log.Println("Got http request of document")
