@@ -1,15 +1,20 @@
 import "./App.css";
 import React, { useCallback, useState, useEffect } from "react";
-import { createEditor } from "slate";
+import {
+  createEditor,
+  Transforms,
+  Editor,
+  Element as SlateElement,
+} from "slate";
 import { Slate, Editable, withReact } from "slate-react";
-import { Editor, Transforms } from "slate";
 import { withHistory } from "slate-history";
+
 
 // Initial content for the editor
 const initialValue = [
   {
     type: "paragraph",
-    children: [{ text: "hello world! this is a 'test' of how to use this" }],
+    children: [{ text: "Type here to test..." }],
   },
 ];
 
@@ -24,6 +29,18 @@ const CodeElement = (props) => {
       <code>{props.children}</code>
     </pre>
   );
+};
+
+const OrderedListElement = (props) => {
+  return <ol {...props.attributes}>{props.children}</ol>;
+};
+
+const UnorderedListElement = (props) => {
+  return <ul {...props.attributes}>{props.children}</ul>;
+};
+
+const ListItemElement = (props) => {
+  return <li {...props.attributes}>{props.children}</li>;
 };
 
 // Custom component for rendering text with formatting
@@ -98,6 +115,12 @@ function App() {
     switch (props.element.type) {
       case "code":
         return <CodeElement {...props} />;
+      case "ordered-list":
+        return <OrderedListElement {...props} />;
+      case "unordered-list":
+        return <UnorderedListElement {...props} />;
+      case "list-item":
+        return <ListItemElement {...props} />;
       default:
         return <DefaultElement {...props} />;
     }
@@ -107,6 +130,44 @@ function App() {
   const renderLeaf = useCallback((props) => {
     return <Leaf {...props} />;
   }, []);
+
+  // Function to insert a list
+  const insertList = (type) => {
+    const isActive = isBlockActive(editor, type);
+    const isList = type === "ordered-list" || type === "unordered-list";
+
+    Transforms.unwrapNodes(editor, {
+      match: (n) =>
+        !Editor.isEditor(n) &&
+        SlateElement.isElement(n) &&
+        ["ordered-list", "unordered-list"].includes(n.type),
+      split: true,
+    });
+
+    const newProperties = {
+      type: isActive ? "paragraph" : isList ? "list-item" : type,
+    };
+    Transforms.setNodes(editor, newProperties);
+
+    if (!isActive && isList) {
+      const block = { type: type, children: [] };
+      Transforms.wrapNodes(editor, block);
+    }
+  };
+
+  // Check if a block type is currently active
+  const isBlockActive = (editor, type) => {
+    const { selection } = editor;
+    if (!selection) return false;
+
+    const [match] = Editor.nodes(editor, {
+      at: Editor.unhangRange(editor, selection),
+      match: (n) =>
+        !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === type,
+    });
+
+    return !!match;
+  };
 
   return (
     <Slate
@@ -128,11 +189,22 @@ function App() {
         renderElement={renderElement}
         renderLeaf={renderLeaf}
         onKeyDown={(event) => {
-          // Handle keyboard shortcuts
           if (!event.ctrlKey) {
             return;
           }
           switch (event.key) {
+            case "o": {
+              // Insert ordered list with Ctrl+O
+              event.preventDefault();
+              insertList("ordered-list");
+              break;
+            }
+            case "l": {
+              // Insert unordered list with Ctrl+L
+              event.preventDefault();
+              insertList("unordered-list");
+              break;
+            }
             case "`": {
               // Toggle code block
               event.preventDefault();
