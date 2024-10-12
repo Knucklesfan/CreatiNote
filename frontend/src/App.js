@@ -6,6 +6,15 @@ import { withHistory } from "slate-history";
 import { renderElement, renderLeaf } from "./Elements";
 import { toggleMark, insertList } from "./utils";
 
+// Logo component
+const Logo = () => {
+  return (
+    <div className="logo">
+      <span className="animate-character">CreatiNote</span>
+    </div>
+  );
+};
+
 // Initial content for the editor
 const initialValue = [
   {
@@ -42,108 +51,111 @@ function App() {
   const [editor] = useState(() => withHistory(withReact(createEditor())));
 
   return (
-    <Slate
-      editor={editor}
-      initialValue={initialValue}
-      onChange={(value) => {
-        // Log changes to the editor content
-        const isAstChange = editor.operations.some(
-          (op) => "set_selection" !== op.type
-        );
-        if (isAstChange) {
-          console.log(value);
-        }
-      }}
-    >
-      <Editable
-        className="slate-editor"
-        renderElement={renderElement}
-        renderLeaf={renderLeaf}
-        onKeyDown={(event) => {
-          if (!event.ctrlKey) {
-            return;
-          }
-          switch (event.key) {
-            case "o": {
-              // Insert ordered list with Ctrl+O
-              event.preventDefault();
-              insertList(editor, "ordered-list");
-              break;
-            }
-            case "l": {
-              // Insert unordered list with Ctrl+L
-              event.preventDefault();
-              insertList(editor, "unordered-list");
-              break;
-            }
-            case "`": {
-              // Toggle code block
-              event.preventDefault();
-              const [match] = Editor.nodes(editor, {
-                match: (n) => n.type === "code",
-              });
-              Transforms.setNodes(
-                editor,
-                { type: match ? "paragraph" : "code" },
-                { match: (n) => Editor.isBlock(editor, n) }
-              );
-              break;
-            }
-            case "b": {
-              // Toggle bold
-              event.preventDefault();
-              toggleMark(editor, "b");
-              break;
-            }
-            case "i": {
-              // Toggle italic
-              event.preventDefault();
-              toggleMark(editor, "i");
-              break;
-            }
-            case "u": {
-              // Toggle underline
-              event.preventDefault();
-              toggleMark(editor, "u");
-              break;
-            }
-            case "s": {
-              // Toggle strikethrough
-              event.preventDefault();
-              toggleMark(editor, "s");
-              break;
-            }
-            case "1": {
-              // Toggle subscript
-              event.preventDefault();
-              toggleMark(editor, "sub");
-              break;
-            }
-            case "2": {
-              // Toggle superscript
-              event.preventDefault();
-              toggleMark(editor, "sup");
-              break;
-            }
-            case "z": {
-              // Undo with Ctrl+Z
-              event.preventDefault();
-              editor.undo();
-              break;
-            }
-            case "y": {
-              // Redo with Ctrl+Y
-              event.preventDefault();
-              editor.redo();
-              break;
-            }
-            default: {
-              break;
-            }
+    <div className="app-container">
+      <Logo />
+      <Slate
+        editor={editor}
+        initialValue={initialValue}
+        onChange={(value) => {
+          // Log changes to the editor content
+          const isAstChange = editor.operations.some(
+            (op) => "set_selection" !== op.type
+          );
+          if (isAstChange) {
+            console.log(value);
           }
         }}
-      />
-    </Slate>
+      >
+        <Editable
+          className="slate-editor"
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
+          onKeyDown={(event) => {
+            if (!event.ctrlKey) {
+              return;
+            }
+            switch (event.key) {
+              case "o": {
+                // Insert ordered list with Ctrl+O
+                event.preventDefault();
+                insertList(editor, "ordered-list");
+                break;
+              }
+              case "l": {
+                // Insert unordered list with Ctrl+L
+                event.preventDefault();
+                insertList(editor, "unordered-list");
+                break;
+              }
+              case "`": {
+                // Toggle code block
+                event.preventDefault();
+                const [match] = Editor.nodes(editor, {
+                  match: (n) => n.type === "code",
+                });
+                Transforms.setNodes(
+                  editor,
+                  { type: match ? "paragraph" : "code" },
+                  { match: (n) => Editor.isBlock(editor, n) }
+                );
+                break;
+              }
+              case "b": {
+                // Toggle bold
+                event.preventDefault();
+                toggleMark(editor, "b");
+                break;
+              }
+              case "i": {
+                // Toggle italic
+                event.preventDefault();
+                toggleMark(editor, "i");
+                break;
+              }
+              case "u": {
+                // Toggle underline
+                event.preventDefault();
+                toggleMark(editor, "u");
+                break;
+              }
+              case "s": {
+                // Toggle strikethrough
+                event.preventDefault();
+                toggleMark(editor, "s");
+                break;
+              }
+              case "1": {
+                // Toggle subscript
+                event.preventDefault();
+                toggleMark(editor, "sub");
+                break;
+              }
+              case "2": {
+                // Toggle superscript
+                event.preventDefault();
+                toggleMark(editor, "sup");
+                break;
+              }
+              case "z": {
+                // Undo with Ctrl+Z
+                event.preventDefault();
+                editor.undo();
+                break;
+              }
+              case "y": {
+                // Redo with Ctrl+Y
+                event.preventDefault();
+                editor.redo();
+                break;
+              }
+              default: {
+                break;
+              }
+            }
+          }}
+        />
+      </Slate>
+    </div>
   );
 }
 

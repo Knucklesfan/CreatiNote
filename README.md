@@ -15,6 +15,7 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 - **Strikethrough**
 - **Underline**
 - **Redo and undo functions**
+- **App name in the top left corner**
 
 ### HARDER
 
@@ -38,7 +39,6 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 - **Text colors**: Add options in the hovering toolbar.
 - **Placeholder text**: Make it disappear when clicked, with the cursor ready to type.
 - **Text alignment**: Add left, right, and center alignment options in the hovering toolbar.
-- **App name in the top left corner**: Maintain a clean, aesthetic UI.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
