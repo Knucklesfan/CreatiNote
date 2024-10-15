@@ -50,27 +50,27 @@ function App() {
   // Create a Slate editor object that uses the React and History plugins
   const [editor] = useState(() => withHistory(withReact(createEditor())));
 
+  // Handle tab key
+  const handleTab = (event) => {
+    event.preventDefault();
+    // Insert a tab character
+    Transforms.insertText(editor, "\t");
+  };
+
   return (
     <div className="app-container">
       <Logo />
-      <Slate
-        editor={editor}
-        initialValue={initialValue}
-        onChange={(value) => {
-          // Log changes to the editor content
-          const isAstChange = editor.operations.some(
-            (op) => "set_selection" !== op.type
-          );
-          if (isAstChange) {
-            console.log(value);
-          }
-        }}
-      >
+      <Slate editor={editor} initialValue={initialValue}>
         <Editable
           className="slate-editor"
           renderElement={renderElement}
           renderLeaf={renderLeaf}
           onKeyDown={(event) => {
+            if (event.key === "Tab") {
+              handleTab(event);
+              return;
+            }
+
             if (!event.ctrlKey) {
               return;
             }

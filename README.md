@@ -16,12 +16,13 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 - **Underline**
 - **Redo and undo functions**
 - **App name in the top left corner**
+- **Tab key**
 
 ### HARDER
 
 - **Database to store notes**: Likely a priority.
 - **Real-time collaboration**: Requires deployment for testing outside of the development environment. Slate might offer an implementation option for this.
-- **Dynamic Editor Sizing**: Allow the note-taking area to expand without bounds, with the ability to resize the editor window. Users can create new editor instances (new notes) and close/reopen them via a button.
+- **Editor Area/ typing**: Implement pagination as the editor expands downwards when typing. Additionally maybe we should allow the editor to be closed and opened and this is how we do multiple notes etc. Not fully sure on this bullet so put it in the harder category.
 - **Share notes**: Implement sharing options later.
 - **Join groups**: Allow users to join study groups.
 
