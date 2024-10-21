@@ -32,10 +32,10 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 - **Dark mode**: Add a toggle button in the top right corner.
 - **Lock mode**: Prevent notes from being edited using an option in the hovering toolbar.
 - **Emojis**: Add an emoji picker to the hovering toolbar.
+- **Hovering toolbar**: In Progress (Jagger)
 
 ### EASIER
 
-- **Hovering toolbar**: Implement with Slate's options for a more user-friendly UI.
 - **Fonts**: Limit to the default font; allow size changes via Ctrl + Up/Down arrow.
 - **Text colors**: Add options in the hovering toolbar.
 - **Placeholder text**: Make it disappear when clicked, with the cursor ready to type.

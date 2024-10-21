@@ -1,10 +1,11 @@
 import "./App.css";
-import React, { useState, useEffect } from "react";
-import { createEditor, Transforms, Editor } from "slate";
-import { Slate, Editable, withReact } from "slate-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { createEditor, Transforms, Editor, Range} from "slate";
+import { Slate, Editable, withReact, useSlate, ReactEditor } from "slate-react";
 import { withHistory } from "slate-history";
 import { renderElement, renderLeaf } from "./Elements";
 import { toggleMark, insertList } from "./utils";
+import "./Toolbar.css";
 
 // Logo component
 const Logo = () => {
@@ -23,31 +24,81 @@ const initialValue = [
   },
 ];
 
-function App() {
-  // Effect for fetching data when component mounts
+// Floating toolbar component
+const HoveringToolbar = () => {
+  const editor = useSlate();
+  const [toolbarStyle, setToolbarStyle] = useState({
+    opacity: 0,
+    top: -10000,
+    left: -10000,
+  });
+
+  const updateToolbar = useCallback(() => {
+    const { selection } = editor;
+
+    if (
+      !selection ||
+      !ReactEditor.isFocused(editor) ||
+      Range.isCollapsed(selection) ||
+      Editor.string(editor, selection) === ""
+    ) {
+      setToolbarStyle({ opacity: 0, top: -10000, left: -10000 });
+      return;
+    }
+
+    const domSelection = window.getSelection();
+    const domRange = domSelection.getRangeAt(0);
+    const rect = domRange.getBoundingClientRect();
+
+    setToolbarStyle({
+      opacity: 1,
+      top: `${rect.top + window.scrollY - 35}px`, // gap above the text and the button
+      left: `${rect.left + window.scrollX}px`,
+    });
+  }, [editor]);
+
   useEffect(() => {
-    var apiUrl = "getsheet";
-    fetch(apiUrl, {
-      method: "POST",
-      body: JSON.stringify({
-        token: "example",
-        document: "testdoc",
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    const { selection } = editor;
+    if (selection) {
+      updateToolbar();
+    }
+  }, [editor.selection, updateToolbar]);
 
-    return () => {
-      console.log("Component will unmount");
-    };
-  }, []);
+  const isMarkActive = (format) => {
+    const marks = Editor.marks(editor);
+    return marks ? marks[format] === true : false;
+  };
 
-  // Create a Slate editor object that uses the React and History plugins
+  const toggleFormat = (e, format) => {
+    e.preventDefault();
+    toggleMark(editor, format);
+  };
+
+  return (
+    <div className="hovering-toolbar" style={toolbarStyle}>
+      <button
+        onMouseDown={(e) => toggleFormat(e, "b")}
+        className={isMarkActive("b") ? "active" : ""}
+      >
+        B
+      </button>
+      <button
+        onMouseDown={(e) => toggleFormat(e, "i")}
+        className={isMarkActive("i") ? "active" : ""}
+      >
+        I
+      </button>
+      <button
+        onMouseDown={(e) => toggleFormat(e, "u")}
+        className={isMarkActive("u") ? "active" : ""}
+      >
+        U
+      </button>
+    </div>
+  );
+};
+
+function App() {
   const [editor] = useState(() => withHistory(withReact(createEditor())));
 
   // Handle tab key
@@ -61,6 +112,7 @@ function App() {
     <div className="app-container">
       <Logo />
       <Slate editor={editor} initialValue={initialValue}>
+        <HoveringToolbar />
         <Editable
           className="slate-editor"
           renderElement={renderElement}
