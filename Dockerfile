@@ -31,7 +31,9 @@ RUN     CGO_ENABLED=0 go build
 FROM node:20.17.0 AS node-build
 
 WORKDIR /usr/src/frontend
-COPY ./frontend/ .
+COPY ./frontend/package.json .
+COPY ./frontend/package-lock.json .
+COPY ./frontend/yarn.lock .
 
 # produces static html 'dist' here:
 #
@@ -39,6 +41,7 @@ COPY ./frontend/ .
 #
 RUN npm install
 RUN npm ci
+COPY ./frontend/ .
 RUN npm run build
 
 #
