@@ -17,6 +17,7 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 - **Redo and undo functions**
 - **App name in the top left corner**
 - **Tab key**
+- **Placeholder text**
 
 ### HARDER
 
@@ -38,7 +39,6 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 
 - **Fonts**: Limit to the default font; allow size changes via Ctrl + Up/Down arrow.
 - **Text colors**: Add options in the hovering toolbar.
-- **Placeholder text**: Make it disappear when clicked, with the cursor ready to type.
 - **Text alignment**: Add left, right, and center alignment options in the hovering toolbar.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
