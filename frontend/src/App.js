@@ -11,7 +11,7 @@ import "./Toolbar.css";
 const Logo = () => {
   return (
     <div className="logo">
-      <span className="animate-character">CreatiNote</span>
+    <span className="animate-character">CreatiNote</span>
     </div>
   );
 };
@@ -19,9 +19,11 @@ const Logo = () => {
 // Initial content for the editor
 const initialValue = [
   {
-    type: "paragraph",
-    children: [{ text: "Type here..." }],
-  },
+    type: 'paragraph',
+    children: [
+      {text: ''}
+    ]
+  }
 ];
 
 // Floating toolbar component
@@ -76,24 +78,24 @@ const HoveringToolbar = () => {
 
   return (
     <div className="hovering-toolbar" style={toolbarStyle}>
-      <button
-        onMouseDown={(e) => toggleFormat(e, "b")}
-        className={isMarkActive("b") ? "active" : ""}
-      >
-        B
-      </button>
-      <button
-        onMouseDown={(e) => toggleFormat(e, "i")}
-        className={isMarkActive("i") ? "active" : ""}
-      >
-        I
-      </button>
-      <button
-        onMouseDown={(e) => toggleFormat(e, "u")}
-        className={isMarkActive("u") ? "active" : ""}
-      >
-        U
-      </button>
+    <button
+    onMouseDown={(e) => toggleFormat(e, "b")}
+    className={isMarkActive("b") ? "active" : ""}
+    >
+    B
+    </button>
+    <button
+    onMouseDown={(e) => toggleFormat(e, "i")}
+    className={isMarkActive("i") ? "active" : ""}
+    >
+    I
+    </button>
+    <button
+    onMouseDown={(e) => toggleFormat(e, "u")}
+    className={isMarkActive("u") ? "active" : ""}
+    >
+    U
+    </button>
     </div>
   );
 };
@@ -110,103 +112,108 @@ function App() {
 
   return (
     <div className="app-container">
-      <Logo />
-      <Slate editor={editor} initialValue={initialValue}>
-        <HoveringToolbar />
-        <Editable
-          className="slate-editor"
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-          onKeyDown={(event) => {
-            if (event.key === "Tab") {
-              handleTab(event);
-              return;
-            }
+    <Logo />
+    <Slate editor={editor} initialValue={initialValue}>
+    <HoveringToolbar />
+    <Editable
+    className="slate-editor"
+    renderElement={renderElement}
+    renderLeaf={renderLeaf}
+    placeholder="Type here..."
+    renderPlaceholder={({ children, attributes }) => (
+      <div style={{position: 'absolute', pointerEvents: 'none', width: 100+'%', maxWidth: 100+'%', display: 'block', opacity: 0.333, userSelect: 'none', textDecoration: 'none'}} contenteditable="false">
+      {children}
+      </div>)}
+    onKeyDown={(event) => {
+      if (event.key === "Tab") {
+        handleTab(event);
+        return;
+      }
 
-            if (!event.ctrlKey) {
-              return;
-            }
-            switch (event.key) {
-              case "o": {
-                // Insert ordered list with Ctrl+O
-                event.preventDefault();
-                insertList(editor, "ordered-list");
-                break;
-              }
-              case "l": {
-                // Insert unordered list with Ctrl+L
-                event.preventDefault();
-                insertList(editor, "unordered-list");
-                break;
-              }
-              case "`": {
-                // Toggle code block
-                event.preventDefault();
-                const [match] = Editor.nodes(editor, {
-                  match: (n) => n.type === "code",
-                });
-                Transforms.setNodes(
-                  editor,
-                  { type: match ? "paragraph" : "code" },
-                  { match: (n) => Editor.isBlock(editor, n) }
-                );
-                break;
-              }
-              case "b": {
-                // Toggle bold
-                event.preventDefault();
-                toggleMark(editor, "b");
-                break;
-              }
-              case "i": {
-                // Toggle italic
-                event.preventDefault();
-                toggleMark(editor, "i");
-                break;
-              }
-              case "u": {
-                // Toggle underline
-                event.preventDefault();
-                toggleMark(editor, "u");
-                break;
-              }
-              case "s": {
-                // Toggle strikethrough
-                event.preventDefault();
-                toggleMark(editor, "s");
-                break;
-              }
-              case "1": {
-                // Toggle subscript
-                event.preventDefault();
-                toggleMark(editor, "sub");
-                break;
-              }
-              case "2": {
-                // Toggle superscript
-                event.preventDefault();
-                toggleMark(editor, "sup");
-                break;
-              }
-              case "z": {
-                // Undo with Ctrl+Z
-                event.preventDefault();
-                editor.undo();
-                break;
-              }
-              case "y": {
-                // Redo with Ctrl+Y
-                event.preventDefault();
-                editor.redo();
-                break;
-              }
-              default: {
-                break;
-              }
-            }
-          }}
-        />
-      </Slate>
+      if (!event.ctrlKey) {
+        return;
+      }
+      switch (event.key) {
+        case "o": {
+          // Insert ordered list with Ctrl+O
+          event.preventDefault();
+          insertList(editor, "ordered-list");
+          break;
+        }
+        case "l": {
+          // Insert unordered list with Ctrl+L
+          event.preventDefault();
+          insertList(editor, "unordered-list");
+          break;
+        }
+        case "`": {
+          // Toggle code block
+          event.preventDefault();
+          const [match] = Editor.nodes(editor, {
+            match: (n) => n.type === "code",
+          });
+          Transforms.setNodes(
+            editor,
+            { type: match ? "paragraph" : "code" },
+            { match: (n) => Editor.isBlock(editor, n) }
+          );
+          break;
+        }
+        case "b": {
+          // Toggle bold
+          event.preventDefault();
+          toggleMark(editor, "b");
+          break;
+        }
+        case "i": {
+          // Toggle italic
+          event.preventDefault();
+          toggleMark(editor, "i");
+          break;
+        }
+        case "u": {
+          // Toggle underline
+          event.preventDefault();
+          toggleMark(editor, "u");
+          break;
+        }
+        case "s": {
+          // Toggle strikethrough
+          event.preventDefault();
+          toggleMark(editor, "s");
+          break;
+        }
+        case "1": {
+          // Toggle subscript
+          event.preventDefault();
+          toggleMark(editor, "sub");
+          break;
+        }
+        case "2": {
+          // Toggle superscript
+          event.preventDefault();
+          toggleMark(editor, "sup");
+          break;
+        }
+        case "z": {
+          // Undo with Ctrl+Z
+          event.preventDefault();
+          editor.undo();
+          break;
+        }
+        case "y": {
+          // Redo with Ctrl+Y
+          event.preventDefault();
+          editor.redo();
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+    }}
+    />
+    </Slate>
     </div>
   );
 }
