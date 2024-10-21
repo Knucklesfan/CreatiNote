@@ -37,7 +37,9 @@ COPY ./frontend/ .
 #
 #       /app/vue-go/dist
 #
-RUN npm install && npm ci && npm run build
+RUN npm install
+RUN npm ci
+RUN npm run build
 
 #
 # final layer: include just go-binary and static html 'dist' 
