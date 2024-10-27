@@ -29,6 +29,36 @@ export const isBlockActive = (editor, type) => {
   return !!match;
 };
 
+// Check if alignment is active
+export const isAlignmentActive = (editor, alignment) => {
+  const { selection } = editor;
+  if (!selection) return false;
+
+  const [match] = Editor.nodes(editor, {
+    at: selection,
+    match: (n) => Editor.isBlock(editor, n) && n.align === alignment,
+  });
+
+  return !!match;
+};
+
+// Set alignment for selected blocks
+export const setAlignment = (editor, alignment) => {
+  const { selection } = editor;
+  if (!selection) return;
+
+  const nodes = Array.from(
+    Editor.nodes(editor, {
+      at: selection,
+      match: (n) => Editor.isBlock(editor, n),
+    })
+  );
+
+  nodes.forEach(([node, path]) => {
+    Transforms.setNodes(editor, { align: alignment }, { at: path });
+  });
+};
+
 // Function to insert a list
 export const insertList = (editor, type) => {
   const isActive = isBlockActive(editor, type);

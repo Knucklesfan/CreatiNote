@@ -1,28 +1,59 @@
 import React from "react";
 
-// Define custom elements for rendering
+// Define custom elements for rendering with alignment support
 export const DefaultElement = (props) => {
-  return <p {...props.attributes}>{props.children}</p>;
+  return (
+    <p
+      {...props.attributes}
+      style={{ textAlign: props.element.align || "left" }}
+    >
+      {props.children}
+    </p>
+  );
 };
 
 export const CodeElement = (props) => {
   return (
-    <pre {...props.attributes}>
+    <pre
+      {...props.attributes}
+      style={{ textAlign: props.element.align || "left" }}
+    >
       <code>{props.children}</code>
     </pre>
   );
 };
 
 export const OrderedListElement = (props) => {
-  return <ol {...props.attributes}>{props.children}</ol>;
+  return (
+    <ol
+      {...props.attributes}
+      style={{ textAlign: props.element.align || "left" }}
+    >
+      {props.children}
+    </ol>
+  );
 };
 
 export const UnorderedListElement = (props) => {
-  return <ul {...props.attributes}>{props.children}</ul>;
+  return (
+    <ul
+      {...props.attributes}
+      style={{ textAlign: props.element.align || "left" }}
+    >
+      {props.children}
+    </ul>
+  );
 };
 
 export const ListItemElement = (props) => {
-  return <li {...props.attributes}>{props.children}</li>;
+  return (
+    <li
+      {...props.attributes}
+      style={{ textAlign: props.element.align || "left" }}
+    >
+      {props.children}
+    </li>
+  );
 };
 
 // Custom component for rendering text with formatting
