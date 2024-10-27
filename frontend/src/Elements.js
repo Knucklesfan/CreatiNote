@@ -1,5 +1,40 @@
 import React from "react";
 
+// Logo component
+export const Logo = () => {
+  return (
+    <div className="logo">
+      <span className="animate-character">CreatiNote</span>
+    </div>
+  );
+};
+
+// Initial content for the editor
+export const initialValue = [
+  {
+    type: "paragraph",
+    align: "left",
+    children: [{ text: "" }],
+  },
+];
+
+export const withLayout = (editor) => {
+  const { apply } = editor;
+
+  editor.apply = (operation) => {
+    if (
+      operation.type === "insert_node" &&
+      operation.node.type === "paragraph" &&
+      !operation.node.align
+    ) {
+      operation.node.align = "left";
+    }
+    apply(operation);
+  };
+
+  return editor;
+};
+
 // Define custom elements for rendering with alignment support
 export const DefaultElement = (props) => {
   return (

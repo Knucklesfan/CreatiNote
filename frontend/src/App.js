@@ -1,177 +1,30 @@
+// Import necessary dependencies and styles
 import "./App.css";
-import React, { useState, useEffect, useCallback } from "react";
-import { createEditor, Transforms, Editor, Range } from "slate";
-import { Slate, Editable, withReact, useSlate, ReactEditor } from "slate-react";
+import React, { useState } from "react";
+// Import core Slate editor utilities
+import { createEditor, Transforms, Editor } from "slate";
+// Import Slate React components
+import { Slate, Editable, withReact } from "slate-react";
+// Import history functionality for undo/redo
 import { withHistory } from "slate-history";
-import { renderElement, renderLeaf } from "./Elements";
-import { toggleMark, insertList, isAlignmentActive } from "./utils";
-import { AlignLeft, AlignCenter, AlignRight } from "lucide-react";
-import "./Toolbar.css";
-
-// Logo component
-const Logo = () => {
-  return (
-    <div className="logo">
-      <span className="animate-character">CreatiNote</span>
-    </div>
-  );
-};
-
-// Initial content for the editor
-const initialValue = [
-  {
-    type: "paragraph",
-    align: "left",
-    children: [{ text: "" }],
-  },
-];
-
-// Floating toolbar component
-const HoveringToolbar = () => {
-  const editor = useSlate();
-  const [toolbarStyle, setToolbarStyle] = useState({
-    opacity: 0,
-    top: -10000,
-    left: -10000,
-  });
-
-  const updateToolbar = useCallback(() => {
-    const { selection } = editor;
-
-    if (
-      !selection ||
-      !ReactEditor.isFocused(editor) ||
-      Range.isCollapsed(selection) ||
-      Editor.string(editor, selection) === ""
-    ) {
-      setToolbarStyle({ opacity: 0, top: -10000, left: -10000 });
-      return;
-    }
-
-    const domSelection = window.getSelection();
-    const domRange = domSelection.getRangeAt(0);
-    const rect = domRange.getBoundingClientRect();
-
-    setToolbarStyle({
-      opacity: 1,
-      top: `${rect.top + window.scrollY - 35}px`,
-      left: `${rect.left + window.scrollX}px`,
-    });
-  }, [editor]);
-
-  useEffect(() => {
-    const { selection } = editor;
-    if (selection) {
-      updateToolbar();
-    }
-  }, [editor.selection, updateToolbar]);
-
-  const isMarkActive = (format) => {
-    const marks = Editor.marks(editor);
-    return marks ? marks[format] === true : false;
-  };
-
-  const toggleFormat = (e, format) => {
-    e.preventDefault();
-    toggleMark(editor, format);
-  };
-
-  const handleAlignment = (e, alignment) => {
-    e.preventDefault();
-    const { selection } = editor;
-    if (!selection) return;
-
-    const nodes = Array.from(
-      Editor.nodes(editor, {
-        at: selection,
-        match: (n) => Editor.isBlock(editor, n),
-      })
-    );
-
-    nodes.forEach(([node, path]) => {
-      Transforms.setNodes(editor, { align: alignment }, { at: path });
-    });
-  };
-
-  return (
-    <div
-      className="hovering-toolbar"
-      style={toolbarStyle}
-      onMouseDown={(e) => {
-        e.preventDefault();
-      }}
-    >
-      <button
-        onMouseDown={(e) => toggleFormat(e, "b")}
-        className={isMarkActive("b") ? "active" : ""}
-        title="Bold"
-      >
-        B
-      </button>
-      <button
-        onMouseDown={(e) => toggleFormat(e, "i")}
-        className={isMarkActive("i") ? "active" : ""}
-        title="Italic"
-      >
-        I
-      </button>
-      <button
-        onMouseDown={(e) => toggleFormat(e, "u")}
-        className={isMarkActive("u") ? "active" : ""}
-        title="Underline"
-      >
-        U
-      </button>
-
-      <div className="toolbar-separator" />
-
-      <button
-        onMouseDown={(e) => handleAlignment(e, "left")}
-        className={isAlignmentActive(editor, "left") ? "active" : ""}
-        title="Align Left"
-      >
-        <AlignLeft size={16} />
-      </button>
-      <button
-        onMouseDown={(e) => handleAlignment(e, "center")}
-        className={isAlignmentActive(editor, "center") ? "active" : ""}
-        title="Align Center"
-      >
-        <AlignCenter size={16} />
-      </button>
-      <button
-        onMouseDown={(e) => handleAlignment(e, "right")}
-        className={isAlignmentActive(editor, "right") ? "active" : ""}
-        title="Align Right"
-      >
-        <AlignRight size={16} />
-      </button>
-    </div>
-  );
-};
-
-const withLayout = (editor) => {
-  const { apply } = editor;
-
-  editor.apply = (operation) => {
-    if (
-      operation.type === "insert_node" &&
-      operation.node.type === "paragraph" &&
-      !operation.node.align
-    ) {
-      operation.node.align = "left";
-    }
-    apply(operation);
-  };
-
-  return editor;
-};
+// Import custom components and utilities
+import {
+  renderElement,
+  renderLeaf,
+  Logo,
+  initialValue,
+  withLayout,
+} from "./Elements";
+import { toggleMark, insertList } from "./utils";
+import { HoveringToolbar } from "./HoveringToolbar";
 
 function App() {
+  // Initialize the Slate editor with React, History, and custom Layout plugins
   const [editor] = useState(() =>
     withLayout(withHistory(withReact(createEditor())))
   );
 
+  // Handle tab key press by inserting a tab character
   const handleTab = (event) => {
     event.preventDefault();
     Transforms.insertText(editor, "\t");
@@ -180,13 +33,16 @@ function App() {
   return (
     <div className="app-container">
       <Logo />
+      {/* Slate editor context provider with initial content */}
       <Slate editor={editor} initialValue={initialValue}>
         <HoveringToolbar />
+        {/* Main editable area with custom rendering and event handling */}
         <Editable
           className="slate-editor"
           renderElement={renderElement}
           renderLeaf={renderLeaf}
           placeholder="Type here..."
+          // Custom placeholder rendering with styling
           renderPlaceholder={({ children, attributes }) => (
             <div
               style={{
@@ -204,27 +60,33 @@ function App() {
               {children}
             </div>
           )}
+          // Handle keyboard shortcuts and special key combinations
           onKeyDown={(event) => {
+            // Handle tab key separately
             if (event.key === "Tab") {
               handleTab(event);
               return;
             }
 
+            // Only process ctrl/cmd key combinations
             if (!event.ctrlKey) {
               return;
             }
             switch (event.key) {
               case "o": {
+                // Ctrl+O: Insert ordered list
                 event.preventDefault();
                 insertList(editor, "ordered-list");
                 break;
               }
               case "l": {
+                // Ctrl+L: Insert unordered list
                 event.preventDefault();
                 insertList(editor, "unordered-list");
                 break;
               }
               case "`": {
+                // Ctrl+`: Toggle code block
                 event.preventDefault();
                 const [match] = Editor.nodes(editor, {
                   match: (n) => n.type === "code",
@@ -237,41 +99,49 @@ function App() {
                 break;
               }
               case "b": {
+                // Ctrl+B: Toggle bold
                 event.preventDefault();
                 toggleMark(editor, "b");
                 break;
               }
               case "i": {
+                // Ctrl+I: Toggle italic
                 event.preventDefault();
                 toggleMark(editor, "i");
                 break;
               }
               case "u": {
+                // Ctrl+U: Toggle underline
                 event.preventDefault();
                 toggleMark(editor, "u");
                 break;
               }
               case "s": {
+                // Ctrl+S: Toggle strikethrough
                 event.preventDefault();
                 toggleMark(editor, "s");
                 break;
               }
               case "1": {
+                // Ctrl+1: Toggle subscript
                 event.preventDefault();
                 toggleMark(editor, "sub");
                 break;
               }
               case "2": {
+                // Ctrl+2: Toggle superscript
                 event.preventDefault();
                 toggleMark(editor, "sup");
                 break;
               }
               case "z": {
+                // Ctrl+Z: Undo
                 event.preventDefault();
                 editor.undo();
                 break;
               }
               case "y": {
+                // Ctrl+Y: Redo
                 event.preventDefault();
                 editor.redo();
                 break;
