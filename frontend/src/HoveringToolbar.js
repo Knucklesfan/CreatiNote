@@ -1,8 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Editor, Range, Transforms } from "slate";
 import { useSlate, ReactEditor } from "slate-react";
-import { AlignLeft, AlignCenter, AlignRight } from "lucide-react";
-import { toggleMark, isAlignmentActive } from "./utils";
+import {
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
+import {
+  toggleMark,
+  isAlignmentActive,
+  getFontSize,
+  setFontSize,
+} from "./utils";
 import "./Toolbar.css";
 
 // Floating toolbar component
@@ -72,6 +83,16 @@ export const HoveringToolbar = () => {
     });
   };
 
+  const handleFontSize = (e, increase) => {
+    e.preventDefault();
+    const currentSize = getFontSize(editor);
+    const newSize = increase ? currentSize + 2 : currentSize - 2;
+    if (newSize >= 8 && newSize <= 72) {
+      // Limit font size between 8px and 72px
+      setFontSize(editor, newSize);
+    }
+  };
+
   return (
     <div
       className="hovering-toolbar"
@@ -100,6 +121,21 @@ export const HoveringToolbar = () => {
         title="Underline"
       >
         U
+      </button>
+
+      <div className="toolbar-separator" />
+
+      <button
+        onMouseDown={(e) => handleFontSize(e, false)}
+        title="Decrease Font Size"
+      >
+        <ChevronDown size={16} />
+      </button>
+      <button
+        onMouseDown={(e) => handleFontSize(e, true)}
+        title="Increase Font Size"
+      >
+        <ChevronUp size={16} />
       </button>
 
       <div className="toolbar-separator" />

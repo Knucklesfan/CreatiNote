@@ -109,6 +109,7 @@ export const Leaf = (props) => {
           : props.leaf.sup
           ? "super"
           : "baseline",
+        fontSize: props.leaf.fontSize || "inherit",
       }}
     >
       {props.children}

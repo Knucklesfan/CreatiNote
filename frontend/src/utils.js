@@ -15,6 +15,17 @@ export function toggleMark(editor, mark) {
   }
 }
 
+// Get current font size
+export const getFontSize = (editor) => {
+  const marks = Editor.marks(editor);
+  return marks?.fontSize ? parseInt(marks.fontSize) : 16; // Default font size
+};
+
+// Set font size
+export const setFontSize = (editor, size) => {
+  Editor.addMark(editor, "fontSize", `${size}px`);
+};
+
 // Check if a block type is currently active
 export const isBlockActive = (editor, type) => {
   const { selection } = editor;
