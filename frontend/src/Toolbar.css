@@ -45,3 +45,28 @@
   background-color: #555;
   margin: 0 4px;
 }
+
+.font-size-input {
+  width: 42px;
+  background-color: #444;
+  border: 1px solid #555;
+  color: #fff;
+  border-radius: 3px;
+  font-size: 13px;
+  text-align: center;
+  padding-left: 11px;
+  padding-right: 0px;
+  box-sizing: border-box;
+}
+
+.font-size-input::-webkit-inner-spin-button,
+.font-size-input::-webkit-outer-spin-button {
+  opacity: 0;
+  height: 0;
+}
+
+.font-size-input:focus {
+  outline: none;
+  border-color: #666;
+  background-color: #4a4a4a;
+}

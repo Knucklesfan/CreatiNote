@@ -19,6 +19,7 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 - **Tab key**
 - **Placeholder text**
 - **Text alignment**: Add left, right, and center alignment options in the hovering toolbar.
+- - **Fonts**: Limit to the default font; allow size changes
 
 ### HARDER
 
@@ -38,7 +39,6 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 
 ### EASIER
 
-- **Fonts**: Limit to the default font; allow size changes via Ctrl + Up/Down arrow.
 - **Text colors**: Add options in the hovering toolbar.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------

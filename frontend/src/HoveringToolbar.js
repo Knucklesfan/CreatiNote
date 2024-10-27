@@ -16,7 +16,6 @@ import {
 } from "./utils";
 import "./Toolbar.css";
 
-// Floating toolbar component
 export const HoveringToolbar = () => {
   const editor = useSlate();
   const [toolbarStyle, setToolbarStyle] = useState({
@@ -24,6 +23,8 @@ export const HoveringToolbar = () => {
     top: -10000,
     left: -10000,
   });
+  const [fontSize, setFontSizeState] = useState(16);
+  const [inputValue, setInputValue] = useState("16");
 
   const updateToolbar = useCallback(() => {
     const { selection } = editor;
@@ -41,6 +42,10 @@ export const HoveringToolbar = () => {
     const domSelection = window.getSelection();
     const domRange = domSelection.getRangeAt(0);
     const rect = domRange.getBoundingClientRect();
+
+    const currentFontSize = getFontSize(editor);
+    setFontSizeState(currentFontSize);
+    setInputValue(currentFontSize.toString());
 
     setToolbarStyle({
       opacity: 1,
@@ -88,9 +93,29 @@ export const HoveringToolbar = () => {
     const currentSize = getFontSize(editor);
     const newSize = increase ? currentSize + 2 : currentSize - 2;
     if (newSize >= 8 && newSize <= 72) {
-      // Limit font size between 8px and 72px
       setFontSize(editor, newSize);
+      setFontSizeState(newSize);
+      setInputValue(newSize.toString());
     }
+  };
+
+  const handleFontSizeInput = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+
+    const newSize = parseInt(value) || 16;
+    if (newSize >= 8 && newSize <= 72) {
+      setFontSize(editor, newSize);
+      setFontSizeState(newSize);
+    }
+  };
+
+  const handleFontSizeBlur = () => {
+    // Ensure the input shows a valid number when focus is lost
+    const validSize = Math.min(Math.max(parseInt(inputValue) || 16, 8), 72);
+    setInputValue(validSize.toString());
+    setFontSize(editor, validSize);
+    setFontSizeState(validSize);
   };
 
   return (
@@ -98,7 +123,9 @@ export const HoveringToolbar = () => {
       className="hovering-toolbar"
       style={toolbarStyle}
       onMouseDown={(e) => {
-        e.preventDefault();
+        if (!(e.target instanceof HTMLInputElement)) {
+          e.preventDefault();
+        }
       }}
     >
       <button
@@ -131,6 +158,17 @@ export const HoveringToolbar = () => {
       >
         <ChevronDown size={16} />
       </button>
+      <input
+        type="number"
+        value={inputValue}
+        onChange={handleFontSizeInput}
+        onBlur={handleFontSizeBlur}
+        onMouseDown={(e) => e.stopPropagation()}
+        min="8"
+        max="72"
+        className="font-size-input"
+        title="Font Size"
+      />
       <button
         onMouseDown={(e) => handleFontSize(e, true)}
         title="Increase Font Size"
