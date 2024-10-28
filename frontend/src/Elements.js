@@ -37,7 +37,6 @@ const NotesPanel = ({ isOpen }) => {
 export const NavigationPanel = () => {
   const [isNotesPanelOpen, setIsNotesPanelOpen] = useState(false);
 
-  // Handler functions for various navigation actions
   const handleCreateNote = () => {
     console.log("Create Note clicked");
   };
@@ -59,10 +58,6 @@ export const NavigationPanel = () => {
     console.log("Share clicked");
   };
 
-  const handleUserGuide = () => {
-    console.log("User Guide clicked");
-  };
-
   return (
     <>
       <div className="nav-panel">
@@ -73,17 +68,20 @@ export const NavigationPanel = () => {
         <NavButton text="Delete Note" onClick={handleDeleteNote} />
         <NavButton text="Groups" onClick={handleGroups} />
         <NavButton text="Share" onClick={handleShare} />
-        <NavButton text="User Guide" onClick={handleUserGuide} />
       </div>
       <NotesPanel isOpen={isNotesPanelOpen} />
     </>
   );
 };
 
-// Right panel component with hamburger menu and theme toggle
+// Right panel component with hamburger menu, help button, and theme toggle
 export const RightPanel = () => {
   const handleHamburger = () => {
     console.log("Hamburger menu clicked");
+  };
+
+  const handleHelp = () => {
+    console.log("Help clicked");
   };
 
   const handleThemeToggle = () => {
@@ -94,6 +92,9 @@ export const RightPanel = () => {
     <div className="right-panel">
       <div className="nav-button hamburger-button" onClick={handleHamburger}>
         <span className="animate-character">☰</span>
+      </div>
+      <div className="nav-button help-button" onClick={handleHelp}>
+        <span className="animate-character">?</span>
       </div>
       <div className="nav-button theme-toggle" onClick={handleThemeToggle}>
         <span className="animate-character">◐</span>

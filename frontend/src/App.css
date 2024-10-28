@@ -2,7 +2,7 @@
 .app-container {
   position: relative;
   width: 100%;
-  min-width: 800px; /* Match editor's max-width */
+  min-width: 800px;
   min-height: 100vh;
   overflow: hidden;
   background-color: #f0f4f8;
@@ -10,14 +10,22 @@
   box-sizing: border-box;
 }
 
-/* Navigation panel container */
-.nav-panel {
+/* Panel positioning */
+.nav-panel,
+.right-panel {
   position: absolute;
   top: 20px;
-  left: 20px;
   display: flex;
   gap: 10px;
   z-index: 1000;
+}
+
+.nav-panel {
+  left: 20px;
+}
+
+.right-panel {
+  right: 20px;
 }
 
 /* Create Note container for button and chevron */
@@ -25,23 +33,13 @@
   position: relative;
 }
 
-/* Right panel container */
-.right-panel {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
-  z-index: 1000;
-}
-
 /* Base styles for all navigation buttons */
 .nav-button {
   background-color: rgba(0, 0, 0, 0.1);
-  padding: 10px 15px;
+  padding: 8px 12px;
   border-radius: 20px;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 14px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -52,11 +50,12 @@
   transform: translateY(-2px);
 }
 
-/* Special styling for hamburger and theme toggle buttons */
+/* Special styling for icon buttons */
 .hamburger-button,
+.help-button,
 .theme-toggle {
-  padding: 10px 12px;
-  font-size: 20px;
+  padding: 7px 9px; /* Slightly smaller than left side buttons */
+  font-size: 16px; /* Reduced to match left side proportions */
 }
 
 /* Chevron button styling */
@@ -155,7 +154,7 @@
   }
 }
 
-/* Styling for the Slate editor container */
+/* Slate editor styling */
 .slate-editor {
   margin: 80px auto 20px;
   padding: 30px;
@@ -173,29 +172,28 @@
   -moz-tab-size: 8;
 }
 
-/* Styling the text within the editor */
 .slate-editor p {
   margin-bottom: 16px;
   font-size: 16px;
 }
 
-/* For focus states and a cleaner look when the editor is selected */
 .slate-editor:focus-within {
   border-color: #4a90e2;
   box-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
 }
 
-/* Responsive adjustments for buttons as screen narrows */
+/* Responsive adjustments */
 @media screen and (max-width: 1000px) {
   .nav-button {
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 6px 10px;
+    font-size: 13px;
   }
 
   .hamburger-button,
+  .help-button,
   .theme-toggle {
-    padding: 8px 10px;
-    font-size: 18px;
+    padding: 5px 7px;
+    font-size: 15px;
   }
 
   .nav-panel,
@@ -206,18 +204,18 @@
 
 @media screen and (max-width: 900px) {
   .nav-button {
-    padding: 6px 10px;
-    font-size: 13px;
+    padding: 5px 8px;
+    font-size: 12px;
   }
 
   .hamburger-button,
+  .help-button,
   .theme-toggle {
-    padding: 6px 8px;
-    font-size: 16px;
+    padding: 4px 6px;
+    font-size: 14px;
   }
 }
 
-/* Add horizontal scrolling when width is below minimum */
 @media screen and (max-width: 800px) {
   .app-container {
     overflow-x: auto;
