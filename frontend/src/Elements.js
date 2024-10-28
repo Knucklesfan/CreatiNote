@@ -1,15 +1,108 @@
-import React from "react";
+import React, { useState } from "react";
 
-// Logo component
-export const Logo = () => {
+// Reusable navigation button component with animated text
+const NavButton = ({ text, onClick }) => {
   return (
-    <div className="logo">
-      <span className="animate-character">CreatiNote</span>
+    <div className="nav-button" onClick={onClick}>
+      <span className="animate-character">{text}</span>
     </div>
   );
 };
 
-// Initial content for the editor
+// Animated chevron button component for toggling panels
+const ChevronButton = ({ isOpen, onClick }) => {
+  return (
+    <div className={`chevron-button ${isOpen ? "open" : ""}`} onClick={onClick}>
+      <span className="animate-character">›</span>
+    </div>
+  );
+};
+
+// Side panel component for displaying saved notes
+const NotesPanel = ({ isOpen }) => {
+  return (
+    <div className={`notes-panel ${isOpen ? "open" : ""}`}>
+      <h3 className="notes-panel-title">Saved Notes</h3>
+      <div className="notes-list">
+        {/* Placeholder for notes list */}
+        <div className="note-item">Example Note 1</div>
+        <div className="note-item">Example Note 2</div>
+        <div className="note-item">Example Note 3</div>
+      </div>
+    </div>
+  );
+};
+
+// Left navigation panel with note management controls
+export const NavigationPanel = () => {
+  const [isNotesPanelOpen, setIsNotesPanelOpen] = useState(false);
+
+  // Handler functions for various navigation actions
+  const handleCreateNote = () => {
+    console.log("Create Note clicked");
+  };
+
+  const toggleNotesPanel = (e) => {
+    e.stopPropagation();
+    setIsNotesPanelOpen(!isNotesPanelOpen);
+  };
+
+  const handleDeleteNote = () => {
+    console.log("Delete Note clicked");
+  };
+
+  const handleGroups = () => {
+    console.log("Groups clicked");
+  };
+
+  const handleShare = () => {
+    console.log("Share clicked");
+  };
+
+  const handleUserGuide = () => {
+    console.log("User Guide clicked");
+  };
+
+  return (
+    <>
+      <div className="nav-panel">
+        <div className="create-note-wrapper">
+          <NavButton text="Create Note" onClick={handleCreateNote} />
+          <ChevronButton isOpen={isNotesPanelOpen} onClick={toggleNotesPanel} />
+        </div>
+        <NavButton text="Delete Note" onClick={handleDeleteNote} />
+        <NavButton text="Groups" onClick={handleGroups} />
+        <NavButton text="Share" onClick={handleShare} />
+        <NavButton text="User Guide" onClick={handleUserGuide} />
+      </div>
+      <NotesPanel isOpen={isNotesPanelOpen} />
+    </>
+  );
+};
+
+// Right panel component with hamburger menu and theme toggle
+export const RightPanel = () => {
+  const handleHamburger = () => {
+    console.log("Hamburger menu clicked");
+  };
+
+  const handleThemeToggle = () => {
+    console.log("Theme toggle clicked");
+  };
+
+  return (
+    <div className="right-panel">
+      <div className="nav-button hamburger-button" onClick={handleHamburger}>
+        <span className="animate-character">☰</span>
+      </div>
+      <div className="nav-button theme-toggle" onClick={handleThemeToggle}>
+        <span className="animate-character">◐</span>
+      </div>
+    </div>
+  );
+};
+
+// Initial value for the Slate editor
 export const initialValue = [
   {
     type: "paragraph",
@@ -18,10 +111,12 @@ export const initialValue = [
   },
 ];
 
+// Custom plugin to handle text alignment in the editor
 export const withLayout = (editor) => {
   const { apply } = editor;
 
   editor.apply = (operation) => {
+    // Ensure new paragraphs have a default left alignment
     if (
       operation.type === "insert_node" &&
       operation.node.type === "paragraph" &&
@@ -35,7 +130,7 @@ export const withLayout = (editor) => {
   return editor;
 };
 
-// Define custom elements for rendering with alignment support
+// Default paragraph element renderer
 export const DefaultElement = (props) => {
   return (
     <p
@@ -47,6 +142,7 @@ export const DefaultElement = (props) => {
   );
 };
 
+// Code block element renderer
 export const CodeElement = (props) => {
   return (
     <pre
@@ -58,6 +154,7 @@ export const CodeElement = (props) => {
   );
 };
 
+// Ordered list element renderer
 export const OrderedListElement = (props) => {
   return (
     <ol
@@ -69,6 +166,7 @@ export const OrderedListElement = (props) => {
   );
 };
 
+// Unordered list element renderer
 export const UnorderedListElement = (props) => {
   return (
     <ul
@@ -80,6 +178,7 @@ export const UnorderedListElement = (props) => {
   );
 };
 
+// List item element renderer
 export const ListItemElement = (props) => {
   return (
     <li
@@ -91,7 +190,7 @@ export const ListItemElement = (props) => {
   );
 };
 
-// Custom component for rendering text with formatting
+// Text formatting renderer for bold, italic, underline, strike, subscript, and superscript
 export const Leaf = (props) => {
   return (
     <span
@@ -117,7 +216,7 @@ export const Leaf = (props) => {
   );
 };
 
-// Callback for rendering elements
+// Element renderer selector based on element type
 export const renderElement = (props) => {
   switch (props.element.type) {
     case "code":
@@ -133,7 +232,7 @@ export const renderElement = (props) => {
   }
 };
 
-// Callback for rendering leaves (text with formatting)
+// Leaf renderer for text formatting
 export const renderLeaf = (props) => {
   return <Leaf {...props} />;
 };

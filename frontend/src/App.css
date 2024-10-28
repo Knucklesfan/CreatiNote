@@ -2,37 +2,138 @@
 .app-container {
   position: relative;
   width: 100%;
+  min-width: 800px; /* Match editor's max-width */
   min-height: 100vh;
   overflow: hidden;
-  background-color: #f0f4f8; /* Soft, cool gray for the overall background */
+  background-color: #f0f4f8;
   padding: 20px;
   box-sizing: border-box;
 }
 
-/* Styling for the logo */
-.logo {
+/* Navigation panel container */
+.nav-panel {
   position: absolute;
   top: 20px;
   left: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+}
+
+/* Create Note container for button and chevron */
+.create-note-wrapper {
+  position: relative;
+}
+
+/* Right panel container */
+.right-panel {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+}
+
+/* Base styles for all navigation buttons */
+.nav-button {
   background-color: rgba(0, 0, 0, 0.1);
   padding: 10px 15px;
   border-radius: 20px;
   font-weight: bold;
   font-size: 16px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-/* Smooth, dark gradient animation for the logo text */
-.logo .animate-character {
+.nav-button:hover {
+  transform: translateY(-2px);
+}
+
+/* Special styling for hamburger and theme toggle buttons */
+.hamburger-button,
+.theme-toggle {
+  padding: 10px 12px;
+  font-size: 20px;
+}
+
+/* Chevron button styling */
+.chevron-button {
+  position: absolute;
+  top: 100%;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 6px 8px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  width: fit-content;
+  margin-top: 5px;
+}
+
+.chevron-button.open {
+  transform: rotate(90deg);
+}
+
+.chevron-button:hover {
+  transform: translateY(-2px);
+}
+
+.chevron-button.open:hover {
+  transform: rotate(90deg) translateY(-2px);
+}
+
+/* Notes panel styling */
+.notes-panel {
+  position: fixed;
+  top: 80px;
+  left: -320px;
+  width: 300px;
+  height: calc(100vh - 100px);
+  background-color: #faf8f0;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  padding: 20px;
+  z-index: 900;
+}
+
+.notes-panel.open {
+  transform: translateX(320px);
+}
+
+.notes-panel-title {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.note-item {
+  padding: 12px;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.note-item:hover {
+  transform: translateX(4px);
+  background-color: #f5f5f5;
+}
+
+/* Gradient animation for the button text */
+.animate-character {
   text-transform: uppercase;
-  background-image: linear-gradient(
-    90deg,
-    #6868b4,
-    #206a50,
-    #103869,
-    #7e1313
-  );
+  background-image: linear-gradient(90deg, #6868b4, #206a50, #103869, #7e1313);
   background-size: 300% 100%;
   color: #fff;
   background-clip: text;
@@ -56,16 +157,16 @@
 
 /* Styling for the Slate editor container */
 .slate-editor {
-  margin: 60px auto 20px; /* Increased top margin to accommodate the logo */
+  margin: 80px auto 20px;
   padding: 30px;
-  background-color: #faf8f0; /* Warm, paper-like color */
+  background-color: #faf8f0;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   width: 80%;
   max-width: 800px;
   min-height: 600px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  font-family: "Georgia", serif; /* A more paper-like font */
+  font-family: "Georgia", serif;
   line-height: 1.6;
   color: #333;
   tab-size: 8;
@@ -82,4 +183,43 @@
 .slate-editor:focus-within {
   border-color: #4a90e2;
   box-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+}
+
+/* Responsive adjustments for buttons as screen narrows */
+@media screen and (max-width: 1000px) {
+  .nav-button {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .hamburger-button,
+  .theme-toggle {
+    padding: 8px 10px;
+    font-size: 18px;
+  }
+
+  .nav-panel,
+  .right-panel {
+    gap: 5px;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .nav-button {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .hamburger-button,
+  .theme-toggle {
+    padding: 6px 8px;
+    font-size: 16px;
+  }
+}
+
+/* Add horizontal scrolling when width is below minimum */
+@media screen and (max-width: 800px) {
+  .app-container {
+    overflow-x: auto;
+  }
 }

@@ -1,17 +1,14 @@
-// Import necessary dependencies and styles
+// Main application component that implements a rich text editor using Slate.js
 import "./App.css";
 import React, { useState } from "react";
-// Import core Slate editor utilities
 import { createEditor, Transforms, Editor } from "slate";
-// Import Slate React components
 import { Slate, Editable, withReact } from "slate-react";
-// Import history functionality for undo/redo
 import { withHistory } from "slate-history";
-// Import custom components and utilities
 import {
   renderElement,
   renderLeaf,
-  Logo,
+  NavigationPanel,
+  RightPanel,
   initialValue,
   withLayout,
 } from "./Elements";
@@ -19,12 +16,12 @@ import { toggleMark, insertList } from "./utils";
 import { HoveringToolbar } from "./HoveringToolbar";
 
 function App() {
-  // Initialize the Slate editor with React, History, and custom Layout plugins
+  // Initialize the Slate editor with React and History plugins, plus custom layout handling
   const [editor] = useState(() =>
     withLayout(withHistory(withReact(createEditor())))
   );
 
-  // Handle tab key press by inserting a tab character
+  // Handle tab key press by inserting a tab character instead of losing focus
   const handleTab = (event) => {
     event.preventDefault();
     Transforms.insertText(editor, "\t");
@@ -32,11 +29,11 @@ function App() {
 
   return (
     <div className="app-container">
-      <Logo />
-      {/* Slate editor context provider with initial content */}
+      <NavigationPanel />
+      <RightPanel />
+      {/* Slate editor configuration with custom rendering and keyboard shortcuts */}
       <Slate editor={editor} initialValue={initialValue}>
         <HoveringToolbar />
-        {/* Main editable area with custom rendering and event handling */}
         <Editable
           className="slate-editor"
           renderElement={renderElement}
@@ -60,15 +57,14 @@ function App() {
               {children}
             </div>
           )}
-          // Handle keyboard shortcuts and special key combinations
+          // Keyboard shortcut handler for text formatting and editor controls
           onKeyDown={(event) => {
-            // Handle tab key separately
             if (event.key === "Tab") {
               handleTab(event);
               return;
             }
 
-            // Only process ctrl/cmd key combinations
+            // Only process keyboard shortcuts with Ctrl key pressed
             if (!event.ctrlKey) {
               return;
             }
