@@ -3,12 +3,18 @@
   z-index: 1;
   background-color: #333;
   border-radius: 4px;
-  transition: opacity 0.2s, transform 0.15s ease-in-out;
   display: flex;
   gap: 4px;
   padding: 5px 7px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
   transform: translateY(-3px);
+}
+
+/* Dark mode toolbar background */
+.dark-mode .hovering-toolbar {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
 
 .hovering-toolbar button {
@@ -20,16 +26,26 @@
   font-size: 13px;
   font-weight: 500;
   border-radius: 3px;
-  transition: background-color 0.2s, transform 0.15s ease-in-out;
+  transition: all 0.2s ease;
   min-width: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* Dark mode button styles */
+.dark-mode .hovering-toolbar button {
+  color: #f3f4f6;
+}
+
 .hovering-toolbar button:hover {
   background-color: #555;
   transform: translateY(-1px);
+}
+
+/* Dark mode button hover */
+.dark-mode .hovering-toolbar button:hover {
+  background-color: #4b5563;
 }
 
 .hovering-toolbar button.active {
@@ -39,11 +55,22 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+/* Dark mode active button */
+.dark-mode .hovering-toolbar button.active {
+  background-color: #6b7280;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
 .toolbar-separator {
   width: 1px;
   height: 20px;
   background-color: #555;
   margin: 0 4px;
+}
+
+/* Dark mode separator */
+.dark-mode .toolbar-separator {
+  background-color: #4b5563;
 }
 
 .font-size-input {
@@ -57,6 +84,14 @@
   padding-left: 11px;
   padding-right: 0px;
   box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+/* Dark mode input styles */
+.dark-mode .font-size-input {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
 }
 
 .font-size-input::-webkit-inner-spin-button,
@@ -69,4 +104,10 @@
   outline: none;
   border-color: #666;
   background-color: #4a4a4a;
+}
+
+/* Dark mode input focus */
+.dark-mode .font-size-input:focus {
+  border-color: #6b7280;
+  background-color: #4b5563;
 }

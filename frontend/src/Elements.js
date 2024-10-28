@@ -1,30 +1,38 @@
 import React, { useState } from "react";
 
-// Reusable navigation button component with animated text
-const NavButton = ({ text, onClick }) => {
+const NavButton = ({ text, onClick, darkMode }) => {
   return (
-    <div className="nav-button" onClick={onClick}>
+    <div
+      className={`nav-button ${darkMode ? "dark-mode" : ""}`}
+      onClick={onClick}
+    >
       <span className="animate-character">{text}</span>
     </div>
   );
 };
 
-// Animated chevron button component for toggling panels
-const ChevronButton = ({ isOpen, onClick }) => {
+const ChevronButton = ({ isOpen, onClick, darkMode }) => {
   return (
-    <div className={`chevron-button ${isOpen ? "open" : ""}`} onClick={onClick}>
+    <div
+      className={`chevron-button ${isOpen ? "open" : ""} ${
+        darkMode ? "dark-mode" : ""
+      }`}
+      onClick={onClick}
+    >
       <span className="animate-character">›</span>
     </div>
   );
 };
 
-// Side panel component for displaying saved notes
-const NotesPanel = ({ isOpen }) => {
+const NotesPanel = ({ isOpen, darkMode }) => {
   return (
-    <div className={`notes-panel ${isOpen ? "open" : ""}`}>
+    <div
+      className={`notes-panel ${isOpen ? "open" : ""} ${
+        darkMode ? "dark-mode" : ""
+      }`}
+    >
       <h3 className="notes-panel-title">Saved Notes</h3>
       <div className="notes-list">
-        {/* Placeholder for notes list */}
         <div className="note-item">Example Note 1</div>
         <div className="note-item">Example Note 2</div>
         <div className="note-item">Example Note 3</div>
@@ -33,8 +41,7 @@ const NotesPanel = ({ isOpen }) => {
   );
 };
 
-// Left navigation panel with note management controls
-export const NavigationPanel = () => {
+export const NavigationPanel = ({ darkMode }) => {
   const [isNotesPanelOpen, setIsNotesPanelOpen] = useState(false);
 
   const handleCreateNote = () => {
@@ -62,20 +69,31 @@ export const NavigationPanel = () => {
     <>
       <div className="nav-panel">
         <div className="create-note-wrapper">
-          <NavButton text="Create Note" onClick={handleCreateNote} />
-          <ChevronButton isOpen={isNotesPanelOpen} onClick={toggleNotesPanel} />
+          <NavButton
+            text="Create Note"
+            onClick={handleCreateNote}
+            darkMode={darkMode}
+          />
+          <ChevronButton
+            isOpen={isNotesPanelOpen}
+            onClick={toggleNotesPanel}
+            darkMode={darkMode}
+          />
         </div>
-        <NavButton text="Delete Note" onClick={handleDeleteNote} />
-        <NavButton text="Groups" onClick={handleGroups} />
-        <NavButton text="Share" onClick={handleShare} />
+        <NavButton
+          text="Delete Note"
+          onClick={handleDeleteNote}
+          darkMode={darkMode}
+        />
+        <NavButton text="Groups" onClick={handleGroups} darkMode={darkMode} />
+        <NavButton text="Share" onClick={handleShare} darkMode={darkMode} />
       </div>
-      <NotesPanel isOpen={isNotesPanelOpen} />
+      <NotesPanel isOpen={isNotesPanelOpen} darkMode={darkMode} />
     </>
   );
 };
 
-// Right panel component with hamburger menu, help button, and theme toggle
-export const RightPanel = () => {
+export const RightPanel = ({ darkMode, onThemeToggle }) => {
   const handleHamburger = () => {
     console.log("Hamburger menu clicked");
   };
@@ -84,20 +102,25 @@ export const RightPanel = () => {
     console.log("Help clicked");
   };
 
-  const handleThemeToggle = () => {
-    console.log("Theme toggle clicked");
-  };
-
   return (
     <div className="right-panel">
-      <div className="nav-button hamburger-button" onClick={handleHamburger}>
+      <div
+        className={`nav-button hamburger-button ${darkMode ? "dark-mode" : ""}`}
+        onClick={handleHamburger}
+      >
         <span className="animate-character">☰</span>
       </div>
-      <div className="nav-button help-button" onClick={handleHelp}>
+      <div
+        className={`nav-button help-button ${darkMode ? "dark-mode" : ""}`}
+        onClick={handleHelp}
+      >
         <span className="animate-character">?</span>
       </div>
-      <div className="nav-button theme-toggle" onClick={handleThemeToggle}>
-        <span className="animate-character">◐</span>
+      <div
+        className={`nav-button theme-toggle ${darkMode ? "dark-mode" : ""}`}
+        onClick={onThemeToggle}
+      >
+        <span className="animate-character">{darkMode ? "☀️" : "🌙"}</span>
       </div>
     </div>
   );

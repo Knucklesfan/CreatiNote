@@ -16,19 +16,24 @@ import {
 } from "./utils";
 import "./Toolbar.css";
 
-export const HoveringToolbar = () => {
+// Component for the floating toolbar that appears when text is selected
+export const HoveringToolbar = ({ darkMode }) => {
   const editor = useSlate();
+  // State for toolbar position and visibility
   const [toolbarStyle, setToolbarStyle] = useState({
     opacity: 0,
     top: -10000,
     left: -10000,
   });
+  // State for font size management
   const [fontSize, setFontSizeState] = useState(16);
   const [inputValue, setInputValue] = useState("16");
 
+  // Update toolbar position based on text selection
   const updateToolbar = useCallback(() => {
     const { selection } = editor;
 
+    // Hide toolbar if there's no valid selection
     if (
       !selection ||
       !ReactEditor.isFocused(editor) ||
@@ -39,14 +44,17 @@ export const HoveringToolbar = () => {
       return;
     }
 
+    // Position toolbar above the selected text
     const domSelection = window.getSelection();
     const domRange = domSelection.getRangeAt(0);
     const rect = domRange.getBoundingClientRect();
 
+    // Update font size display to match current selection
     const currentFontSize = getFontSize(editor);
     setFontSizeState(currentFontSize);
     setInputValue(currentFontSize.toString());
 
+    // Position toolbar above the selection
     setToolbarStyle({
       opacity: 1,
       top: `${rect.top + window.scrollY - 35}px`,
@@ -54,6 +62,7 @@ export const HoveringToolbar = () => {
     });
   }, [editor]);
 
+  // Update toolbar position when selection changes
   useEffect(() => {
     const { selection } = editor;
     if (selection) {
@@ -61,21 +70,25 @@ export const HoveringToolbar = () => {
     }
   }, [editor.selection, updateToolbar]);
 
+  // Check if a formatting mark is currently active
   const isMarkActive = (format) => {
     const marks = Editor.marks(editor);
     return marks ? marks[format] === true : false;
   };
 
+  // Toggle formatting mark (bold, italic, etc.)
   const toggleFormat = (e, format) => {
     e.preventDefault();
     toggleMark(editor, format);
   };
 
+  // Handle text alignment changes
   const handleAlignment = (e, alignment) => {
     e.preventDefault();
     const { selection } = editor;
     if (!selection) return;
 
+    // Apply alignment to all blocks in selection
     const nodes = Array.from(
       Editor.nodes(editor, {
         at: selection,
@@ -88,10 +101,12 @@ export const HoveringToolbar = () => {
     });
   };
 
+  // Handle font size increment/decrement
   const handleFontSize = (e, increase) => {
     e.preventDefault();
     const currentSize = getFontSize(editor);
     const newSize = increase ? currentSize + 2 : currentSize - 2;
+    // Ensure font size stays within valid range (8-72)
     if (newSize >= 8 && newSize <= 72) {
       setFontSize(editor, newSize);
       setFontSizeState(newSize);
@@ -99,6 +114,7 @@ export const HoveringToolbar = () => {
     }
   };
 
+  // Handle direct font size input
   const handleFontSizeInput = (e) => {
     const value = e.target.value;
     setInputValue(value);
@@ -110,8 +126,8 @@ export const HoveringToolbar = () => {
     }
   };
 
+  // Validate and apply font size when input loses focus
   const handleFontSizeBlur = () => {
-    // Ensure the input shows a valid number when focus is lost
     const validSize = Math.min(Math.max(parseInt(inputValue) || 16, 8), 72);
     setInputValue(validSize.toString());
     setFontSize(editor, validSize);
@@ -120,14 +136,16 @@ export const HoveringToolbar = () => {
 
   return (
     <div
-      className="hovering-toolbar"
+      className={`hovering-toolbar ${darkMode ? "dark-mode" : ""}`}
       style={toolbarStyle}
       onMouseDown={(e) => {
+        // Prevent toolbar from taking focus except for input elements
         if (!(e.target instanceof HTMLInputElement)) {
           e.preventDefault();
         }
       }}
     >
+      {/* Text formatting buttons */}
       <button
         onMouseDown={(e) => toggleFormat(e, "b")}
         className={isMarkActive("b") ? "active" : ""}
@@ -152,6 +170,7 @@ export const HoveringToolbar = () => {
 
       <div className="toolbar-separator" />
 
+      {/* Font size controls */}
       <button
         onMouseDown={(e) => handleFontSize(e, false)}
         title="Decrease Font Size"
@@ -178,6 +197,7 @@ export const HoveringToolbar = () => {
 
       <div className="toolbar-separator" />
 
+      {/* Text alignment buttons */}
       <button
         onMouseDown={(e) => handleAlignment(e, "left")}
         className={isAlignmentActive(editor, "left") ? "active" : ""}

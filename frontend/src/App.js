@@ -1,4 +1,4 @@
-// Main application component that implements a rich text editor using Slate.js
+// Main application component for the rich text editor
 import "./App.css";
 import React, { useState } from "react";
 import { createEditor, Transforms, Editor } from "slate";
@@ -16,26 +16,35 @@ import { toggleMark, insertList } from "./utils";
 import { HoveringToolbar } from "./HoveringToolbar";
 
 function App() {
-  // Initialize the Slate editor with React and History plugins, plus custom layout handling
+  // Initialize the Slate editor with React bindings, history tracking, and custom layout
   const [editor] = useState(() =>
     withLayout(withHistory(withReact(createEditor())))
   );
+  // State for managing dark/light theme
+  const [darkMode, setDarkMode] = useState(false);
 
-  // Handle tab key press by inserting a tab character instead of losing focus
+  // Handle tab key press to insert tab character instead of changing focus
   const handleTab = (event) => {
     event.preventDefault();
     Transforms.insertText(editor, "\t");
   };
 
+  // Toggle between dark and light modes by updating CSS classes
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.documentElement.classList.toggle("dark-mode");
+  };
+
   return (
-    <div className="app-container">
-      <NavigationPanel />
-      <RightPanel />
-      {/* Slate editor configuration with custom rendering and keyboard shortcuts */}
+    <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
+      <NavigationPanel darkMode={darkMode} />
+      <RightPanel darkMode={darkMode} onThemeToggle={toggleDarkMode} />
+      {/* Slate editor context provider */}
       <Slate editor={editor} initialValue={initialValue}>
-        <HoveringToolbar />
+        <HoveringToolbar darkMode={darkMode} />
+        {/* Main editable area with custom rendering and keyboard shortcuts */}
         <Editable
-          className="slate-editor"
+          className={`slate-editor ${darkMode ? "dark-mode" : ""}`}
           renderElement={renderElement}
           renderLeaf={renderLeaf}
           placeholder="Type here..."
@@ -57,7 +66,7 @@ function App() {
               {children}
             </div>
           )}
-          // Keyboard shortcut handler for text formatting and editor controls
+          // Handle keyboard shortcuts for various formatting options
           onKeyDown={(event) => {
             if (event.key === "Tab") {
               handleTab(event);
