@@ -18,28 +18,31 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 - **App name in the top left corner**
 - **Tab key**
 - **Placeholder text**
-- **Text alignment**: Add left, right, and center alignment options in the hovering toolbar.
-- - **Fonts**: Limit to the default font; allow size changes
+- **Text alignment**
+- **Font Size**
+- **Hovering toolbar**
 
 ### HARDER
 
-- **Database to store notes**: Likely a priority.
+- **Database to store notes**: PRIORITY
 - **Real-time collaboration**: Requires deployment for testing outside of the development environment. Slate might offer an implementation option for this.
-- **Editor Area/ typing**: Implement pagination as the editor expands downwards when typing. Additionally maybe we should allow the editor to be closed and opened and this is how we do multiple notes etc. Not fully sure on this bullet so put it in the harder category.
+- **Editor Area/ typing**: Implement pagination as the editor expands downwards when typing.
 - **Share notes**: Implement sharing options later.
 - **Join groups**: Allow users to join study groups.
 
 ### MEDIUM
 
-- **Checklist (bubbles), Images (from a file? Drag and drop? Link?), Links (clickable?), Tables (size options?)**: Implement via a hovering toolbar to keep the UI clean.
-- **Dark mode**: Add a toggle button in the top right corner.
-- **Lock mode**: Prevent notes from being edited using an option in the hovering toolbar.
+- **Images** (from a file? Drag and drop? Link?)
+- **Tables**: (size options?)
+- **polls?**: Put in Hamburger
+- **Dark mode**: Will need to be updated constantly
+- **Lock mode**: Prevent notes from being edited using an option in hamburger
 - **Emojis**: Add an emoji picker to the hovering toolbar.
-- **Hovering toolbar**: In Progress (Jagger)
 
 ### EASIER
 
 - **Text colors**: Add options in the hovering toolbar.
+- **Links (clickable?)**
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
