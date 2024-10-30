@@ -174,3 +174,57 @@
 .color-preset[style*="background-color: #FFFFFF"] {
   border: 1px solid #ccc;
 }
+
+.font-family-container {
+  position: relative;
+}
+
+.font-family-toggle {
+  position: relative;
+}
+
+.font-family-popup {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #444;
+  border-radius: 4px;
+  padding: 8px;
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dark-mode .font-family-popup {
+  background-color: #374151;
+  border: 1px solid #4b5563;
+}
+
+.font-family-option {
+  width: 100%;
+  text-align: left;
+  padding: 6px 8px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.dark-mode .font-family-option {
+  color: #f3f4f6;
+}
+
+.font-family-option:hover {
+  background-color: #555;
+}
+
+.dark-mode .font-family-option:hover {
+  background-color: #4b5563;
+}

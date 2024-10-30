@@ -7,7 +7,8 @@ import {
   AlignRight,
   ChevronUp,
   ChevronDown,
-  Type,
+  Palette,
+  TypeIcon,
 } from "lucide-react";
 import {
   toggleMark,
@@ -16,6 +17,38 @@ import {
   setFontSize,
 } from "./utils";
 import "./Toolbar.css";
+
+// Font family options - Grouped and expanded list of popular fonts
+const fontFamilies = [
+  // System Default
+  { name: "Default", value: "inherit" },
+
+  // Sans-serif fonts
+  { name: "Arial", value: "Arial, sans-serif" },
+  { name: "Helvetica", value: "Helvetica Neue, Helvetica, sans-serif" },
+  { name: "Roboto", value: "Roboto, sans-serif" },
+  { name: "Open Sans", value: "Open Sans, sans-serif" },
+  { name: "Verdana", value: "Verdana, sans-serif" },
+  { name: "Tahoma", value: "Tahoma, sans-serif" },
+  { name: "Segoe UI", value: "Segoe UI, sans-serif" },
+  { name: "Calibri", value: "Calibri, sans-serif" },
+
+  // Serif fonts
+  { name: "Times New Roman", value: "Times New Roman, Times, serif" },
+  { name: "Georgia", value: "Georgia, serif" },
+  { name: "Garamond", value: "Garamond, serif" },
+  { name: "Baskerville", value: "Baskerville, serif" },
+
+  // Monospace fonts
+  { name: "Courier New", value: "Courier New, monospace" },
+  { name: "Consolas", value: "Consolas, monospace" },
+  { name: "Monaco", value: "Monaco, monospace" },
+
+  // Display fonts
+  { name: "Trebuchet MS", value: "Trebuchet MS, sans-serif" },
+  { name: "Impact", value: "Impact, sans-serif" },
+  { name: "Arial Black", value: "Arial Black, sans-serif" },
+];
 
 // Component for the floating toolbar that appears when text is selected
 export const HoveringToolbar = ({ darkMode }) => {
@@ -30,6 +63,7 @@ export const HoveringToolbar = ({ darkMode }) => {
   const [fontSize, setFontSizeState] = useState(16);
   const [inputValue, setInputValue] = useState("16");
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showFontFamily, setShowFontFamily] = useState(false);
 
   // Extended color palette
   const commonColors = [
@@ -106,6 +140,11 @@ export const HoveringToolbar = ({ darkMode }) => {
     return marks?.color || "#000000";
   };
 
+  const getCurrentFontFamily = () => {
+    const marks = Editor.marks(editor);
+    return marks?.fontFamily || "inherit";
+  };
+
   const toggleFormat = (e, format) => {
     e.preventDefault();
     toggleMark(editor, format);
@@ -172,6 +211,12 @@ export const HoveringToolbar = ({ darkMode }) => {
   const handleCommonColorClick = (e, color) => {
     e.preventDefault();
     Editor.addMark(editor, "color", color);
+  };
+
+  const handleFontFamilyChange = (e, fontFamily) => {
+    e.preventDefault();
+    Editor.addMark(editor, "fontFamily", fontFamily);
+    setShowFontFamily(false);
   };
 
   return (
@@ -247,7 +292,7 @@ export const HoveringToolbar = ({ darkMode }) => {
           }}
           title="Text Color"
         >
-          <Type size={16} style={{ color: getCurrentColor() }} />
+          <Palette size={16} style={{ color: getCurrentColor() }} />
         </button>
         {showColorPicker && (
           <div
@@ -271,6 +316,39 @@ export const HoveringToolbar = ({ darkMode }) => {
                 />
               ))}
             </div>
+          </div>
+        )}
+      </div>
+
+      <div className="toolbar-separator" />
+
+      {/* Font Family Dropdown */}
+      <div className="font-family-container">
+        <button
+          className="font-family-toggle"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            setShowFontFamily(!showFontFamily);
+          }}
+          title="Font Family"
+        >
+          <TypeIcon size={16} />
+        </button>
+        {showFontFamily && (
+          <div
+            className="font-family-popup"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            {fontFamilies.map((font) => (
+              <button
+                key={font.value}
+                className="font-family-option"
+                style={{ fontFamily: font.value }}
+                onMouseDown={(e) => handleFontFamilyChange(e, font.value)}
+              >
+                {font.name}
+              </button>
+            ))}
           </div>
         )}
       </div>
