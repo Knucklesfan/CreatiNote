@@ -228,3 +228,159 @@
 .dark-mode .font-family-option:hover {
   background-color: #4b5563;
 }
+
+/* Emoji picker container */
+.emoji-picker-container {
+  position: relative;
+}
+
+.emoji-picker-toggle {
+  position: relative;
+}
+
+/* Main emoji popup */
+.emoji-picker-popup {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #444;
+  border-radius: 4px;
+  padding: 8px;
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 320px;
+}
+
+/* Dark mode styles for popup */
+.dark-mode .emoji-picker-popup {
+  background-color: #374151;
+  border: 1px solid #4b5563;
+}
+
+/* Category navigation */
+.emoji-categories {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  -webkit-scrollbar-width: thin;
+}
+
+/* Webkit scrollbar styling for categories */
+.emoji-categories::-webkit-scrollbar {
+  height: 6px;
+}
+
+.emoji-categories::-webkit-scrollbar-track {
+  background: #333;
+  border-radius: 3px;
+}
+
+.emoji-categories::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 3px;
+}
+
+.dark-mode .emoji-categories::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.dark-mode .emoji-categories::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+/* Category buttons */
+.emoji-category-button {
+  white-space: nowrap;
+  padding: 6px 12px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  flex-shrink: 0;
+  min-width: max-content;
+}
+
+.dark-mode .emoji-category-button {
+  color: #f3f4f6;
+}
+
+.emoji-category-button:hover {
+  background-color: #555;
+}
+
+.dark-mode .emoji-category-button:hover {
+  background-color: #4b5563;
+}
+
+.emoji-category-button.active {
+  background-color: #666;
+}
+
+.dark-mode .emoji-category-button.active {
+  background-color: #6b7280;
+}
+
+/* Emoji grid */
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Webkit scrollbar styling for emoji grid */
+.emoji-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.emoji-grid::-webkit-scrollbar-track {
+  background: #333;
+  border-radius: 3px;
+}
+
+.emoji-grid::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 3px;
+}
+
+.dark-mode .emoji-grid::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.dark-mode .emoji-grid::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+/* Individual emoji buttons */
+.emoji-button {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+.emoji-button:hover {
+  background-color: #555;
+  transform: scale(1.1);
+}
+
+.dark-mode .emoji-button:hover {
+  background-color: #4b5563;
+}

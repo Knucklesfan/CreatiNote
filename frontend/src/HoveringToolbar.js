@@ -9,6 +9,7 @@ import {
   ChevronDown,
   Palette,
   TypeIcon,
+  Smile,
 } from "lucide-react";
 import {
   toggleMark,
@@ -50,6 +51,119 @@ const fontFamilies = [
   { name: "Arial Black", value: "Arial Black, sans-serif" },
 ];
 
+// Common emojis grouped by category
+const commonEmojis = {
+  "Smileys & People": [
+    "😊",
+    "😂",
+    "🥰",
+    "😎",
+    "🤔",
+    "😴",
+    "😭",
+    "🤗",
+    "🤓",
+    "😉",
+    "👍",
+    "👋",
+    "🤝",
+    "👏",
+    "🙌",
+  ],
+  "Animals & Nature": [
+    "🐶",
+    "🐱",
+    "🦁",
+    "🐼",
+    "🐨",
+    "🦊",
+    "🦋",
+    "🌺",
+    "🌸",
+    "🌲",
+    "⭐",
+    "🌙",
+    "☀️",
+    "🌈",
+    "❄️",
+  ],
+  "Food & Drink": [
+    "🍕",
+    "🍔",
+    "🍟",
+    "🌮",
+    "🍜",
+    "🍱",
+    "🍎",
+    "🍓",
+    "🍇",
+    "☕",
+    "🍺",
+    "🍷",
+    "🥤",
+    "🧃",
+    "🍪",
+  ],
+  Activities: [
+    "⚽",
+    "🏀",
+    "🎮",
+    "🎨",
+    "🎭",
+    "🎪",
+    "🎯",
+    "🎲",
+    "🎸",
+    "🎹",
+    "✈️",
+    "🚗",
+    "🚲",
+    "⛺",
+    "🎉",
+  ],
+  Symbols: [
+    "❤️",
+    "💜",
+    "💙",
+    "✅",
+    "☑️",
+    "✔️",
+    "❌",
+    "⭕",
+    "❗",
+    "❓",
+    "⚠️",
+    "💯",
+    "✨",
+    "💫",
+    "📌",
+  ],
+};
+
+// Extended color palette
+const commonColors = [
+  "#000000", // Black
+  "#FFFFFF", // White
+  "#FF0000", // Red
+  "#00FF00", // Green
+  "#0000FF", // Blue
+  "#FFFF00", // Yellow
+  "#FF00FF", // Magenta
+  "#00FFFF", // Cyan
+  "#808080", // Gray
+  "#FFA500", // Orange
+  "#800080", // Purple
+  "#A52A2A", // Brown
+  "#FFC0CB", // Pink
+  "#006400", // Dark Green
+  "#000080", // Navy
+  "#008080", // Teal
+  "#808000", // Olive
+  "#FFD700", // Gold
+  "#C0C0C0", // Silver
+  "#FF4500", // Orange Red
+];
+
 // Component for the floating toolbar that appears when text is selected
 export const HoveringToolbar = ({ darkMode }) => {
   const editor = useSlate();
@@ -64,30 +178,8 @@ export const HoveringToolbar = ({ darkMode }) => {
   const [inputValue, setInputValue] = useState("16");
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showFontFamily, setShowFontFamily] = useState(false);
-
-  // Extended color palette
-  const commonColors = [
-    "#000000", // Black
-    "#FFFFFF", // White
-    "#FF0000", // Red
-    "#00FF00", // Green
-    "#0000FF", // Blue
-    "#FFFF00", // Yellow
-    "#FF00FF", // Magenta
-    "#00FFFF", // Cyan
-    "#808080", // Gray
-    "#FFA500", // Orange
-    "#800080", // Purple
-    "#A52A2A", // Brown
-    "#FFC0CB", // Pink
-    "#006400", // Dark Green
-    "#000080", // Navy
-    "#008080", // Teal
-    "#808000", // Olive
-    "#FFD700", // Gold
-    "#C0C0C0", // Silver
-    "#FF4500", // Orange Red
-  ];
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [selectedEmojiCategory, setSelectedEmojiCategory] = useState("Smileys & People");
 
   const updateToolbar = useCallback(() => {
     const { selection } = editor;
@@ -217,6 +309,13 @@ export const HoveringToolbar = ({ darkMode }) => {
     e.preventDefault();
     Editor.addMark(editor, "fontFamily", fontFamily);
     setShowFontFamily(false);
+  };
+
+  const handleEmojiSelect = (e, emoji) => {
+    e.preventDefault();
+    // Insert the emoji at the current selection
+    Transforms.insertText(editor, emoji);
+    setShowEmojiPicker(false);
   };
 
   return (
@@ -349,6 +448,57 @@ export const HoveringToolbar = ({ darkMode }) => {
                 {font.name}
               </button>
             ))}
+          </div>
+        )}
+      </div>
+
+      <div className="toolbar-separator" />
+
+      {/* Emoji Picker */}
+      <div className="emoji-picker-container">
+        <button
+          className="emoji-picker-toggle"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            setShowEmojiPicker(!showEmojiPicker);
+          }}
+          title="Insert Emoji"
+        >
+          <Smile size={16} />
+        </button>
+        {showEmojiPicker && (
+          <div
+            className="emoji-picker-popup"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="emoji-categories">
+              {Object.keys(commonEmojis).map((category) => (
+                <button
+                  key={category}
+                  className={`emoji-category-button ${
+                    selectedEmojiCategory === category ? "active" : ""
+                  }`}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    setSelectedEmojiCategory(category);
+                  }}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+            <div className="emoji-grid">
+              {commonEmojis[selectedEmojiCategory].map((emoji) => (
+                <button
+                  key={emoji}
+                  className="emoji-button"
+                  onMouseDown={(e) => handleEmojiSelect(e, emoji)}
+                  title={emoji}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
