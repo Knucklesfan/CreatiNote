@@ -233,6 +233,7 @@ export const Leaf = (props) => {
           ? "super"
           : "baseline",
         fontSize: props.leaf.fontSize || "inherit",
+        color: props.leaf.color || "inherit",
       }}
     >
       {props.children}

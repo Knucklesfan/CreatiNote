@@ -21,6 +21,7 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 - **Text alignment**
 - **Font Size**
 - **Hovering toolbar**
+- **Text colors**
 
 ### HARDER
 
@@ -41,7 +42,6 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 
 ### EASIER
 
-- **Text colors**: Add options in the hovering toolbar.
 - **Links (clickable?)**
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------

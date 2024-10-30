@@ -7,6 +7,7 @@ import {
   AlignRight,
   ChevronUp,
   ChevronDown,
+  Type,
 } from "lucide-react";
 import {
   toggleMark,
@@ -28,8 +29,32 @@ export const HoveringToolbar = ({ darkMode }) => {
   // State for font size management
   const [fontSize, setFontSizeState] = useState(16);
   const [inputValue, setInputValue] = useState("16");
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
-  // Update toolbar position based on text selection
+  // Extended color palette
+  const commonColors = [
+    "#000000", // Black
+    "#FFFFFF", // White
+    "#FF0000", // Red
+    "#00FF00", // Green
+    "#0000FF", // Blue
+    "#FFFF00", // Yellow
+    "#FF00FF", // Magenta
+    "#00FFFF", // Cyan
+    "#808080", // Gray
+    "#FFA500", // Orange
+    "#800080", // Purple
+    "#A52A2A", // Brown
+    "#FFC0CB", // Pink
+    "#006400", // Dark Green
+    "#000080", // Navy
+    "#008080", // Teal
+    "#808000", // Olive
+    "#FFD700", // Gold
+    "#C0C0C0", // Silver
+    "#FF4500", // Orange Red
+  ];
+
   const updateToolbar = useCallback(() => {
     const { selection } = editor;
 
@@ -76,7 +101,11 @@ export const HoveringToolbar = ({ darkMode }) => {
     return marks ? marks[format] === true : false;
   };
 
-  // Toggle formatting mark (bold, italic, etc.)
+  const getCurrentColor = () => {
+    const marks = Editor.marks(editor);
+    return marks?.color || "#000000";
+  };
+
   const toggleFormat = (e, format) => {
     e.preventDefault();
     toggleMark(editor, format);
@@ -132,6 +161,17 @@ export const HoveringToolbar = ({ darkMode }) => {
     setInputValue(validSize.toString());
     setFontSize(editor, validSize);
     setFontSizeState(validSize);
+  };
+
+  const handleColorChange = (e) => {
+    e.preventDefault();
+    const color = e.target.value;
+    Editor.addMark(editor, "color", color);
+  };
+
+  const handleCommonColorClick = (e, color) => {
+    e.preventDefault();
+    Editor.addMark(editor, "color", color);
   };
 
   return (
@@ -194,6 +234,46 @@ export const HoveringToolbar = ({ darkMode }) => {
       >
         <ChevronUp size={16} />
       </button>
+
+      <div className="toolbar-separator" />
+
+      {/* Color picker */}
+      <div className="color-picker-container">
+        <button
+          className="color-picker-toggle"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            setShowColorPicker(!showColorPicker);
+          }}
+          title="Text Color"
+        >
+          <Type size={16} style={{ color: getCurrentColor() }} />
+        </button>
+        {showColorPicker && (
+          <div
+            className="color-picker-popup"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <input
+              type="color"
+              value={getCurrentColor()}
+              onChange={handleColorChange}
+              className="color-input"
+            />
+            <div className="common-colors">
+              {commonColors.map((color) => (
+                <button
+                  key={color}
+                  className="color-preset"
+                  style={{ backgroundColor: color }}
+                  onMouseDown={(e) => handleCommonColorClick(e, color)}
+                  title={color}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="toolbar-separator" />
 
