@@ -128,14 +128,71 @@ export const insertList = (editor, type) => {
 };
 
 const linkify = linkifyIt();
-// Helper function to create a link node
-const createLinkNode = (url, text) => ({
-  type: "link",
-  url: url.startsWith("http") ? url : `https://${url}`,
-  children: [{ text: text || url }],
-});
 
-// Function to handle pasted text with links
+// Maximum characters to display in shortened URL
+const MAX_DISPLAY_LENGTH = 50;
+
+// Helper function to shorten URL for display
+const shortenUrl = (url) => {
+  if (url.length <= MAX_DISPLAY_LENGTH) return url;
+
+  try {
+    const urlObj = new URL(url);
+    let display = urlObj.hostname;
+
+    // Add pathname if it exists and fits
+    if (urlObj.pathname !== "/") {
+      const pathParts = urlObj.pathname.split("/").filter(Boolean);
+      if (pathParts.length > 0) {
+        const shortPath =
+          pathParts.length > 1
+            ? `/${pathParts[0]}/.../${pathParts[pathParts.length - 1]}`
+            : `/${pathParts[0]}`;
+
+        if ((display + shortPath).length <= MAX_DISPLAY_LENGTH) {
+          display += shortPath;
+        } else {
+          display += "/...";
+        }
+      }
+    }
+
+    // Add query string indicator if it exists
+    if (urlObj.search) {
+      display += "?...";
+    }
+
+    return display;
+  } catch (e) {
+    // Fallback for invalid URLs
+    return url.substring(0, MAX_DISPLAY_LENGTH - 3) + "...";
+  }
+};
+
+// Helper function to create a link node
+const createLinkNode = (url, text) => {
+  const fullUrl = url.startsWith("http") ? url : `https://${url}`;
+  const displayText = text || shortenUrl(fullUrl);
+
+  return {
+    type: "link",
+    url: fullUrl,
+    children: [{ text: displayText }],
+  };
+};
+
+// Helper function to move cursor after a node
+const moveCursorAfterNode = (editor) => {
+  const { selection } = editor;
+  if (selection) {
+    const [node] = Editor.node(editor, selection);
+    const after = Editor.after(editor, Editor.end(editor, selection));
+    if (after) {
+      Transforms.select(editor, after);
+    }
+  }
+};
+
 const insertLinkIfNeeded = (editor, text) => {
   const matches = linkify.match(text);
 
@@ -155,8 +212,11 @@ const insertLinkIfNeeded = (editor, text) => {
     const linkNode = createLinkNode(match.url, match.text);
     Transforms.insertNodes(editor, linkNode);
 
-    // Move cursor after the link
-    Transforms.move(editor, { unit: "offset" });
+    // Move cursor after the link node
+    moveCursorAfterNode(editor);
+
+    // Insert a space after the link
+    Transforms.insertText(editor, " ");
 
     lastIndex = match.lastIndex;
   });
@@ -170,24 +230,43 @@ const insertLinkIfNeeded = (editor, text) => {
   return true;
 };
 
-// Main Slate plugin for link handling
 export const withLinks = (editor) => {
   const { insertData, deleteBackward, isInline } = editor;
 
-  // Define links as inline elements
   editor.isInline = (element) =>
     element.type === "link" ? true : isInline(element);
 
-  // Handle pasting links
   editor.insertData = (data) => {
     const text = data.getData("text/plain");
+
+    // Check if text is a single URL
+    const singleMatch = linkify.match(text);
+    if (
+      singleMatch &&
+      singleMatch.length === 1 &&
+      singleMatch[0].index === 0 &&
+      singleMatch[0].lastIndex === text.length
+    ) {
+      // For single URLs, create the shortened version
+      const linkNode = createLinkNode(singleMatch[0].url);
+      Transforms.insertNodes(editor, linkNode);
+
+      // Move cursor after the link node
+      moveCursorAfterNode(editor);
+
+      // Add a space after
+      Transforms.insertText(editor, " ");
+      return;
+    }
+
+    // Handle text with embedded links
     if (insertLinkIfNeeded(editor, text)) {
       return;
     }
+
     insertData(data);
   };
 
-  // Handle deletion of empty links
   editor.deleteBackward = (...args) => {
     const [linkNode] = Editor.nodes(editor, {
       match: (n) => n.type === "link",
@@ -204,4 +283,10 @@ export const withLinks = (editor) => {
   };
 
   return editor;
+};
+
+export const linkUtils = {
+  shortenUrl,
+  createLinkNode,
+  moveCursorAfterNode,
 };

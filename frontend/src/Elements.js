@@ -250,12 +250,25 @@ export const LinkElement = ({ attributes, children, element }) => {
 
   // Ensure that clicking the link works by preventing Slate's default event handling
   const handleClick = (event) => {
-    event.stopPropagation(); // Prevent Slate from intercepting the click
-    window.open(url, "_blank", "noopener,noreferrer"); // Open in new tab
+    event.preventDefault();
+    event.stopPropagation();
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleMouseOver = (event) => {
+    // Show full URL in tooltip
+    event.target.title = url;
   };
 
   return (
-    <a {...attributes} href={url} onClick={handleClick} className="slate-link">
+    <a
+      {...attributes}
+      href={url}
+      onClick={handleClick}
+      onMouseOver={handleMouseOver}
+      className="slate-link"
+      rel="noopener noreferrer"
+    >
       {children}
     </a>
   );

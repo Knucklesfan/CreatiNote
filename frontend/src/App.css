@@ -332,11 +332,33 @@
 }
 
 .slate-link {
-  color: #0066cc;
-  text-decoration: underline;
+  color: #2563eb;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(37, 99, 235, 0.2);
+  transition: all 0.2s ease;
+  padding: 0 2px;
+  margin: 0 1px;
+  border-radius: 2px;
+  max-width: 500px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
   cursor: pointer;
 }
 
+.slate-link:hover {
+  background-color: rgba(37, 99, 235, 0.1);
+  border-bottom-color: #2563eb;
+}
+
 .dark-mode .slate-link {
-  color: #66b3ff;
+  color: #60a5fa;
+  border-bottom-color: rgba(96, 165, 250, 0.2);
+}
+
+.dark-mode .slate-link:hover {
+  background-color: rgba(96, 165, 250, 0.1);
+  border-bottom-color: #60a5fa;
 }
