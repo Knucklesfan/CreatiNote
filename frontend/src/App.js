@@ -12,13 +12,13 @@ import {
   initialValue,
   withLayout,
 } from "./Elements";
-import { toggleMark, insertList } from "./utils";
+import { toggleMark, insertList, withLinks } from "./utils";
 import { HoveringToolbar } from "./HoveringToolbar";
 
 function App() {
   // Initialize the Slate editor with React bindings, history tracking, and custom layout
   const [editor] = useState(() =>
-    withLayout(withHistory(withReact(createEditor())))
+    withLinks(withLayout(withHistory(withReact(createEditor()))))
   );
   // State for managing dark/light theme
   const [darkMode, setDarkMode] = useState(false);

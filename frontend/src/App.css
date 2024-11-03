@@ -330,3 +330,13 @@
 .note-item {
   transition: all 0.3s ease;
 }
+
+.slate-link {
+  color: #0066cc;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.dark-mode .slate-link {
+  color: #66b3ff;
+}

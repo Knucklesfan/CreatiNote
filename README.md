@@ -25,6 +25,7 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 - **Text colors**
 - **Emojis**
 - **line spacing**
+- **Links (clickable?)**
 
 ### HARDER
 
@@ -41,7 +42,6 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 - **polls?**: Put in Hamburger
 - **Dark mode**: Will need to be updated constantly
 - **Lock mode**: Prevent notes from being edited using an option in hamburger
-- **Links (clickable?)**
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 

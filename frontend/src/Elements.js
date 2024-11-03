@@ -245,9 +245,27 @@ export const Leaf = (props) => {
   );
 };
 
+export const LinkElement = ({ attributes, children, element }) => {
+  const { url } = element;
+
+  // Ensure that clicking the link works by preventing Slate's default event handling
+  const handleClick = (event) => {
+    event.stopPropagation(); // Prevent Slate from intercepting the click
+    window.open(url, "_blank", "noopener,noreferrer"); // Open in new tab
+  };
+
+  return (
+    <a {...attributes} href={url} onClick={handleClick} className="slate-link">
+      {children}
+    </a>
+  );
+};
+
 // Element renderer selector based on element type
 export const renderElement = (props) => {
   switch (props.element.type) {
+    case "link":
+      return <LinkElement {...props} />;
     case "code":
       return <CodeElement {...props} />;
     case "ordered-list":

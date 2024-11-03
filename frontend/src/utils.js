@@ -1,4 +1,5 @@
 import { Editor, Transforms, Element as SlateElement } from "slate";
+import linkifyIt from "linkify-it";
 
 // Check if a mark is currently active
 export const isMarkActive = (editor, format) => {
@@ -124,4 +125,83 @@ export const insertList = (editor, type) => {
     const block = { type: type, children: [] };
     Transforms.wrapNodes(editor, block);
   }
+};
+
+const linkify = linkifyIt();
+// Helper function to create a link node
+const createLinkNode = (url, text) => ({
+  type: "link",
+  url: url.startsWith("http") ? url : `https://${url}`,
+  children: [{ text: text || url }],
+});
+
+// Function to handle pasted text with links
+const insertLinkIfNeeded = (editor, text) => {
+  const matches = linkify.match(text);
+
+  if (!matches) {
+    return false;
+  }
+
+  let lastIndex = 0;
+  matches.forEach((match) => {
+    // Insert any text before the link
+    if (match.index > lastIndex) {
+      const textBeforeLink = text.slice(lastIndex, match.index);
+      Transforms.insertText(editor, textBeforeLink);
+    }
+
+    // Create and insert the link node
+    const linkNode = createLinkNode(match.url, match.text);
+    Transforms.insertNodes(editor, linkNode);
+
+    // Move cursor after the link
+    Transforms.move(editor, { unit: "offset" });
+
+    lastIndex = match.lastIndex;
+  });
+
+  // Insert any remaining text after the last link
+  if (lastIndex < text.length) {
+    const textAfterLink = text.slice(lastIndex);
+    Transforms.insertText(editor, textAfterLink);
+  }
+
+  return true;
+};
+
+// Main Slate plugin for link handling
+export const withLinks = (editor) => {
+  const { insertData, deleteBackward, isInline } = editor;
+
+  // Define links as inline elements
+  editor.isInline = (element) =>
+    element.type === "link" ? true : isInline(element);
+
+  // Handle pasting links
+  editor.insertData = (data) => {
+    const text = data.getData("text/plain");
+    if (insertLinkIfNeeded(editor, text)) {
+      return;
+    }
+    insertData(data);
+  };
+
+  // Handle deletion of empty links
+  editor.deleteBackward = (...args) => {
+    const [linkNode] = Editor.nodes(editor, {
+      match: (n) => n.type === "link",
+    });
+
+    if (linkNode) {
+      const [node, path] = linkNode;
+      if (node.children[0].text === "") {
+        Transforms.unwrapNodes(editor, { at: path });
+      }
+    }
+
+    deleteBackward(...args);
+  };
+
+  return editor;
 };
