@@ -18,12 +18,44 @@ export function toggleMark(editor, mark) {
 // Get current font size
 export const getFontSize = (editor) => {
   const marks = Editor.marks(editor);
-  return marks?.fontSize ? parseInt(marks.fontSize) : 16; // Default font size
+  return marks?.fontSize ? parseInt(marks.fontSize) : 16;
 };
 
 // Set font size
 export const setFontSize = (editor, size) => {
   Editor.addMark(editor, "fontSize", `${size}px`);
+};
+
+// Get current line spacing
+export const getLineSpacing = (editor) => {
+  const { selection } = editor;
+  if (!selection) return 1.0;
+
+  const [match] = Editor.nodes(editor, {
+    at: Editor.unhangRange(editor, selection),
+    match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n),
+  });
+
+  if (!match) return 1.0;
+  const [node] = match;
+  return node.lineHeight || 1.0;
+};
+
+// Set line spacing for selected blocks
+export const setLineSpacing = (editor, spacing) => {
+  const { selection } = editor;
+  if (!selection) return;
+
+  const blockEntries = Array.from(
+    Editor.nodes(editor, {
+      at: selection,
+      match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n),
+    })
+  );
+
+  blockEntries.forEach(([_, path]) => {
+    Transforms.setNodes(editor, { lineHeight: spacing }, { at: path });
+  });
 };
 
 // Check if a block type is currently active

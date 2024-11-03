@@ -159,7 +159,10 @@ export const DefaultElement = (props) => {
   return (
     <p
       {...props.attributes}
-      style={{ textAlign: props.element.align || "left" }}
+      style={{
+        textAlign: props.element.align || "left",
+        lineHeight: props.element.lineHeight || 1.0,
+      }}
     >
       {props.children}
     </p>
@@ -233,7 +236,7 @@ export const Leaf = (props) => {
           ? "super"
           : "baseline",
         fontSize: props.leaf.fontSize || "inherit",
-        fontFamily: props.leaf.fontFamily || 'inherit',
+        fontFamily: props.leaf.fontFamily || "inherit",
         color: props.leaf.color || "inherit",
       }}
     >

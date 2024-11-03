@@ -384,3 +384,65 @@
 .dark-mode .emoji-button:hover {
   background-color: #4b5563;
 }
+
+.line-spacing-container {
+  position: relative;
+}
+
+.line-spacing-toggle {
+  position: relative;
+}
+
+.line-spacing-popup {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #444;
+  border-radius: 4px;
+  padding: 8px;
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dark-mode .line-spacing-popup {
+  background-color: #374151;
+  border: 1px solid #4b5563;
+}
+
+.line-spacing-option {
+  width: 100%;
+  text-align: left;
+  padding: 6px 8px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.dark-mode .line-spacing-option {
+  color: #f3f4f6;
+}
+
+.line-spacing-option:hover {
+  background-color: #555;
+}
+
+.dark-mode .line-spacing-option:hover {
+  background-color: #4b5563;
+}
+
+.line-spacing-option.active {
+  background-color: #666;
+}
+
+.dark-mode .line-spacing-option.active {
+  background-color: #6b7280;
+}

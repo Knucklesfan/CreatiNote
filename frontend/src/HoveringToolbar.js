@@ -10,14 +10,27 @@ import {
   Palette,
   TypeIcon,
   Smile,
+  TextSelect,
 } from "lucide-react";
 import {
   toggleMark,
   isAlignmentActive,
   getFontSize,
   setFontSize,
+  getLineSpacing,
+  setLineSpacing,
 } from "./utils";
 import "./Toolbar.css";
+
+// constant for line spacing options
+const lineSpacingOptions = [
+  { label: "1.0", value: 1.0 },
+  { label: "1.15", value: 1.15 },
+  { label: "1.5", value: 1.5 },
+  { label: "2.0", value: 2.0 },
+  { label: "2.5", value: 2.5 },
+  { label: "3.0", value: 3.0 },
+];
 
 // Font family options - Grouped and expanded list of popular fonts
 const fontFamilies = [
@@ -167,6 +180,16 @@ const commonColors = [
 // Component for the floating toolbar that appears when text is selected
 export const HoveringToolbar = ({ darkMode }) => {
   const editor = useSlate();
+  const [showLineSpacing, setShowLineSpacing] = useState(false);
+
+  const handleLineSpacingChange = (e, spacing) => {
+    e.preventDefault();
+    // Convert spacing to number to ensure proper comparison
+    const spacingValue = parseFloat(spacing);
+    setLineSpacing(editor, spacingValue);
+    setShowLineSpacing(false);
+  };
+
   // State for toolbar position and visibility
   const [toolbarStyle, setToolbarStyle] = useState({
     opacity: 0,
@@ -179,7 +202,8 @@ export const HoveringToolbar = ({ darkMode }) => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showFontFamily, setShowFontFamily] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [selectedEmojiCategory, setSelectedEmojiCategory] = useState("Smileys & People");
+  const [selectedEmojiCategory, setSelectedEmojiCategory] =
+    useState("Smileys & People");
 
   const updateToolbar = useCallback(() => {
     const { selection } = editor;
@@ -499,6 +523,42 @@ export const HoveringToolbar = ({ darkMode }) => {
                 </button>
               ))}
             </div>
+          </div>
+        )}
+      </div>
+
+      <div className="toolbar-separator" />
+
+      <div className="line-spacing-container">
+        <button
+          className="line-spacing-toggle"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            setShowLineSpacing(!showLineSpacing);
+          }}
+          title="Line Spacing"
+        >
+          <TextSelect size={16} />
+        </button>
+        {showLineSpacing && (
+          <div
+            className="line-spacing-popup"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            {lineSpacingOptions.map((option) => {
+              const currentSpacing = getLineSpacing(editor);
+              const isActive = Math.abs(currentSpacing - option.value) < 0.1;
+
+              return (
+                <button
+                  key={option.value}
+                  className={`line-spacing-option ${isActive ? "active" : ""}`}
+                  onMouseDown={(e) => handleLineSpacingChange(e, option.value)}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
