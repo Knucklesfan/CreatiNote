@@ -31,17 +31,14 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 
 - **Database to store notes**: PRIORITY
 - **Real-time collaboration**: Requires deployment for testing outside of the development environment. Slate might offer an implementation option for this.
-- **Editor Area/ typing**: Implement pagination as the editor expands downwards when typing.
 - **Share notes**: Implement sharing options later.
 - **Join groups**: Allow users to join study groups.
 
 ### MEDIUM
 
 - **Images** (from a file? Drag and drop? Link?)
-- **Tables**: (size options?)
-- **polls?**: Put in Hamburger
 - **Dark mode**: Will need to be updated constantly
-- **Lock mode**: Prevent notes from being edited using an option in hamburger
+- **User Guide**
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
