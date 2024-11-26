@@ -90,11 +90,11 @@
 .notes-panel {
   position: fixed;
   top: 80px;
-  left: -320px;
+  left: -321px;
   width: 300px;
   height: calc(100vh - 100px);
   background-color: #faf8f0;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 8px 0 0;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
   padding: 20px;
@@ -361,4 +361,96 @@
 .dark-mode .slate-link:hover {
   background-color: rgba(96, 165, 250, 0.1);
   border-bottom-color: #60a5fa;
+}
+
+/* Help panel styling */
+.help-panel {
+  position: fixed;
+  top: 80px;
+  right: -321px;
+  width: 300px;
+  height: calc(100vh - 100px);
+  background-color: #faf8f0;
+  /* top-left | top-right | bottom-right | bottom-left */
+  border-radius: 8px 0 0 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  padding: 20px;
+  z-index: 900;
+  overflow-y: auto;
+}
+
+.help-panel.open {
+  transform: translateX(-320px);
+}
+
+/* Help panel dark mode - now identical to notes panel dark mode */
+.help-panel.dark-mode {
+  background-color: #262f3d;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  border-right: 1px solid #374151;
+}
+
+.help-panel-title {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.help-section {
+  margin-bottom: 20px;
+}
+
+.help-section-title {
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.help-item {
+  padding: 10px;
+  background-color: white;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.help-item-name {
+  font-weight: bold;
+}
+
+.help-item-shortcut {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.help-item-description {
+  font-size: 0.9rem;
+  margin-top: 5px;
+  color: #444;
+}
+
+/* Dark mode styles */
+.help-panel.dark-mode .help-panel-title {
+  color: #f3f4f6;
+}
+
+.help-panel.dark-mode .help-section-title {
+  border-bottom-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.help-panel.dark-mode .help-item {
+  background-color: #374151;
+  color: #f3f4f6;
+}
+
+.help-panel.dark-mode .help-item-shortcut {
+  color: #9ca3af;
+}
+
+.help-panel.dark-mode .help-item-description {
+  color: #d1d5db;
 }

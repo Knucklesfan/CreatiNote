@@ -1,5 +1,204 @@
 import React, { useState } from "react";
 
+export const HelpPanel = ({ isOpen, darkMode }) => {
+  const helpSections = [
+    {
+      title: "Text Formatting",
+      items: [
+        { name: "Bold", shortcut: "Ctrl + B", description: "Make text bold" },
+        {
+          name: "Italic",
+          shortcut: "Ctrl + I",
+          description: "Make text italic",
+        },
+        {
+          name: "Underline",
+          shortcut: "Ctrl + U",
+          description: "Underline text",
+        },
+        {
+          name: "Strikethrough",
+          shortcut: "Ctrl + S",
+          description: "Add strikethrough to text",
+        },
+        {
+          name: "Superscript",
+          shortcut: "Ctrl + 2",
+          description: "Make text superscript",
+        },
+        {
+          name: "Subscript",
+          shortcut: "Ctrl + 1",
+          description: "Make text subscript",
+        },
+      ],
+    },
+    {
+      title: "Text Selection",
+      items: [
+        {
+          name: "Basic Selection",
+          description:
+            "Click and drag to select text using your mouse or trackpad",
+        },
+        {
+          name: "Word Selection",
+          description: "Double-click to select an entire word",
+        },
+        {
+          name: "Paragraph Selection",
+          description: "Triple-click to select an entire paragraph",
+        },
+        {
+          name: "Keyboard Selection",
+          description: "Hold Shift + Arrow Keys to extend text selection",
+        },
+      ],
+    },
+    {
+      title: "Hovering Toolbar Features",
+      items: [
+        {
+          name: "Text Formatting",
+          description:
+            "Quickly apply bold, italic, and underline to selected text",
+        },
+        {
+          name: "Font Size",
+          description:
+            "Increase or decrease font size using +/- buttons or enter a custom size (8-72)",
+        },
+        {
+          name: "Text Color",
+          description:
+            "Choose custom text colors or select from a preset color palette",
+        },
+        {
+          name: "Font Family",
+          description:
+            "Switch between various font styles like Arial, Times New Roman, and more",
+        },
+        {
+          name: "Emoji Insertion",
+          description:
+            "Browse and insert emojis from different categories directly into your text",
+        },
+        {
+          name: "Line Spacing",
+          description:
+            "Adjust line spacing from 1.0 to 3.0 for better readability",
+        },
+        {
+          name: "Text Alignment",
+          description: "Align text left, center, or right with a single click",
+        },
+      ],
+    },
+    {
+      title: "Lists",
+      items: [
+        {
+          name: "Ordered List",
+          shortcut: "Ctrl + O",
+          description: "Create a numbered list",
+        },
+        {
+          name: "Unordered List",
+          shortcut: "Ctrl + L",
+          description: "Create a bullet point list",
+        },
+      ],
+    },
+    {
+      title: "Document Actions",
+      items: [
+        { name: "Undo", shortcut: "Ctrl + Z", description: "Undo last action" },
+        {
+          name: "Redo",
+          shortcut: "Ctrl + Y",
+          description: "Redo last undone action",
+        },
+        {
+          name: "Tab Key",
+          shortcut: "Tab",
+          description: "Insert a tab character",
+        },
+      ],
+    },
+    {
+      title: "Text Styling",
+      items: [
+        {
+          name: "Text Alignment",
+          description:
+            "Use alignment buttons in the hovering toolbar to change text alignment",
+        },
+        {
+          name: "Font Size",
+          description:
+            "Adjust font size using the +/- buttons in the hovering toolbar",
+        },
+        {
+          name: "Line Spacing",
+          description:
+            "Modify line spacing using the line spacing option in the hovering toolbar",
+        },
+      ],
+    },
+    {
+      title: "Additional Features",
+      items: [
+        {
+          name: "Links",
+          description: "Paste or type a URL to create a clickable link",
+        },
+        {
+          name: "Emojis",
+          description:
+            "Use the emoji picker in the hovering toolbar to insert emojis",
+        },
+        {
+          name: "Code Block",
+          shortcut: "Ctrl + `",
+          description: "Toggle code block formatting",
+        },
+        {
+          name: "Placeholder Text",
+          description: "Appears when no text is entered",
+        },
+      ],
+    },
+  ];
+
+  return (
+    <div
+      className={`help-panel ${isOpen ? "open" : ""} ${
+        darkMode ? "dark-mode" : ""
+      }`}
+    >
+      <h3 className="help-panel-title">How to use CreatiNote</h3>
+      {helpSections.map((section, sectionIndex) => (
+        <div key={sectionIndex} className="help-section">
+          <h4 className="help-section-title">{section.title}</h4>
+          {section.items.map((item, itemIndex) => (
+            <div key={itemIndex} className="help-item">
+              <div className="help-item-name">{item.name}</div>
+              {item.shortcut && (
+                <div className="help-item-shortcut">
+                  Shortcut: {item.shortcut}
+                </div>
+              )}
+              {item.description && (
+                <div className="help-item-description">{item.description}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const NavButton = ({ text, onClick, darkMode }) => {
   return (
     <div
@@ -94,37 +293,46 @@ export const NavigationPanel = ({ darkMode }) => {
 };
 
 export const RightPanel = ({ darkMode, onThemeToggle }) => {
+  const [isHelpPanelOpen, setIsHelpPanelOpen] = useState(false);
+
   const handleHamburger = () => {
     console.log("Hamburger menu clicked");
   };
 
   const handleHelp = () => {
-    console.log("Help clicked");
+    setIsHelpPanelOpen(!isHelpPanelOpen);
   };
 
   return (
-    <div className="right-panel">
-      <div
-        className={`nav-button hamburger-button ${darkMode ? "dark-mode" : ""}`}
-        onClick={handleHamburger}
-      >
-        <span className="animate-character">☰</span>
+    <>
+      <div className="right-panel">
+        <div
+          className={`nav-button hamburger-button ${
+            darkMode ? "dark-mode" : ""
+          }`}
+          onClick={handleHamburger}
+        >
+          <span className="animate-character">☰</span>
+        </div>
+        <div
+          className={`nav-button help-button ${darkMode ? "dark-mode" : ""}`}
+          onClick={handleHelp}
+        >
+          <span className="animate-character">?</span>
+        </div>
+        <div
+          className={`nav-button theme-toggle ${darkMode ? "dark-mode" : ""}`}
+          onClick={onThemeToggle}
+        >
+          <span className="animate-character">{darkMode ? "☀️" : "🌙"}</span>
+        </div>
       </div>
-      <div
-        className={`nav-button help-button ${darkMode ? "dark-mode" : ""}`}
-        onClick={handleHelp}
-      >
-        <span className="animate-character">?</span>
-      </div>
-      <div
-        className={`nav-button theme-toggle ${darkMode ? "dark-mode" : ""}`}
-        onClick={onThemeToggle}
-      >
-        <span className="animate-character">{darkMode ? "☀️" : "🌙"}</span>
-      </div>
-    </div>
+      <HelpPanel isOpen={isHelpPanelOpen} darkMode={darkMode} />
+    </>
   );
 };
+
+export default RightPanel;
 
 // Initial value for the Slate editor
 export const initialValue = [
