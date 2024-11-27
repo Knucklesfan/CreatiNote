@@ -28,21 +28,25 @@ A decentralized, encrypted, self-hosted note-taking app designed for collaborati
 - **Links (clickable?)**
 - **Dark mode**: Will need to be updated constantly
 - **User Guide**
+- **Database to store notes**
 
 ### HARDER
 
-- **Database to store notes**: PRIORITY
 - **Real-time collaboration**: Requires deployment for testing outside of the development environment. Slate might offer an implementation option for this.
+- **Images** (from a file? Drag and drop? Link?)
 - **Share notes**: Implement sharing options later.
 - **Join groups**: Allow users to join study groups.
 
-### MEDIUM
+> Database Instructions
 
-- **Images** (from a file? Drag and drop? Link?)
+- **1**: Pull code
+- **2**: Create a "prod" folder (same way backend and frontend are).
+- **3**: Add two files "db_password.txt" and "db_root_password.txt". Put what you want in them.
+- **4**: Save all and run the build script twice "sudo ./build.sh x" or whatever you usually type on your device. First one will generate db and the second will start the application like normal. You should be good now.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-> **Note**: The following documentation serves as a project overview and initial concept for our class assignment (General ideas). It may not fully reflect the final version of the project.
+> The following documentation serves as a project overview and initial concept for our class assignment (General ideas). It may not fully reflect the final version of the project.
 
 ## Project Overview
 
