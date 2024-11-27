@@ -1,18 +1,19 @@
 #!/bin/bash
 function build-creatinote() {
     docker build -t $NAME .
+    docker tag $NAME:latest $NAME:staging
 }
 function execute-creatinote() {
-    docker run -it --rm -p 8080:8080 --name $INSTANCE $NAME
+    CREATINOTEDB_ROOT_PASSWORD=test CREATINOTEDB_PASSWORD=test docker-compose up
 }
 if [[ "$*" == *"r"* ]]; then
     echo "Building a RELEASE BUILD!"
-    NAME=creatinote-release
-    INSTANCE=creatinote-release-instance
+    NAME=creatinote
+    INSTANCE=creatinote-instance # yeah, i know that release and debug generate the same build... :/
 else
     echo "Building a DEBUG BUILD!"
-    NAME=creatinote-debug
-    INSTANCE=creatinote-debug-instance
+    NAME=creatinote
+    INSTANCE=creatinote-instance
 
 fi
 if build-creatinote; then
