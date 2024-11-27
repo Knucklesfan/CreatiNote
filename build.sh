@@ -4,7 +4,7 @@ function build-creatinote() {
     docker tag $NAME:latest $NAME:staging
 }
 function execute-creatinote() {
-    CREATINOTEDB_ROOT_PASSWORD=test CREATINOTEDB_PASSWORD=test docker-compose up
+    CREATINOTEDB_ROOT_PASSWORD=test CREATINOTEDB_PASSWORD=test docker compose up
 }
 if [[ "$*" == *"r"* ]]; then
     echo "Building a RELEASE BUILD!"
