@@ -1,0 +1,93 @@
+/* General layout for the app container */
+body {
+  background-color: #f0f4f8;
+}
+
+/* Gradient animation for the button text */
+.titleplane {
+  background-color: #e0e4e8;
+  text-align: center;
+  border-radius: 25px;
+  margin:20px;
+  padding:50px;
+  width:fit-content;
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+
+
+}
+.textcontainer {
+  margin-bottom: 0;
+  margin-top: 0;
+  padding: 0;
+}
+.title {
+  text-transform: uppercase;
+  background-image: linear-gradient(90deg, #6868b4, #206a50, #1c4a93, #7e1313);
+  background-size: 300% 100%;
+  color: #fff;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 15s ease infinite;
+  font-size: 10vw;
+  margin: 0;
+  margin-bottom: -0.25em
+  
+  
+}
+a {
+  text-decoration:none;
+}
+.topnav {
+  background-color: #e0e4e8;
+  overflow: hidden;
+  display: flex;
+  border-radius: 10px;
+  justify-content: space-between;
+}
+.topnavlogo {
+  text-decoration:none;
+  background-image: linear-gradient(90deg, #6868b4, #206a50, #1c4a93, #7e1313);
+  background-size: 300% 100%;
+  color: #fff;
+  background-clip: text;
+  display:inline-block;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 15s ease infinite;
+}
+.topnavlink {
+  display:inline-block;
+  text-align: right;
+  height: 100%;
+  vertical-align: middle;
+}
+.nav-button {
+  background-color: #e2e8f0; /* Light mode solid color instead of rgba */
+  padding: 7px 11px; /* Adjusted to account for border */
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border: 1px solid transparent; /* Always have border, but transparent in light mode */
+  margin: 20px;
+
+}
+.buttonbar {
+}
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
