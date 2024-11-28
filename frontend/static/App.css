@@ -1,28 +1,31 @@
-/* General layout for the app container */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   background-color: #f0f4f8;
-}
-
-/* Gradient animation for the button text */
-.titleplane {
-  background-color: #e0e4e8;
-  text-align: center;
-  border-radius: 25px;
-  margin:20px;
-  padding:50px;
-  width:fit-content;
-  max-width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-
-
-}
-.textcontainer {
-  margin-bottom: 0;
-  margin-top: 0;
+  margin: 0;
   padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  height: 100%;
 }
-.title {
+
+.app-container {
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+}
+
+.animate-character {
+  font-size: 40px; /* Keep the font size you chose */
   text-transform: uppercase;
   background-image: linear-gradient(90deg, #6868b4, #206a50, #1c4a93, #7e1313);
   background-size: 300% 100%;
@@ -31,55 +34,15 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradientShift 15s ease infinite;
-  font-size: 10vw;
-  margin: 0;
-  margin-bottom: -0.25em
-  
-  
+  display: inline-block;
+  margin-bottom: 0px; /* Reduce this value to decrease the spacing */
 }
-a {
-  text-decoration:none;
-}
-.topnav {
-  background-color: #e0e4e8;
-  overflow: hidden;
-  display: flex;
-  border-radius: 10px;
-  justify-content: space-between;
-}
-.topnavlogo {
-  text-decoration:none;
-  background-image: linear-gradient(90deg, #6868b4, #206a50, #1c4a93, #7e1313);
-  background-size: 300% 100%;
-  color: #fff;
-  background-clip: text;
-  display:inline-block;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientShift 15s ease infinite;
-}
-.topnavlink {
-  display:inline-block;
-  text-align: right;
-  height: 100%;
-  vertical-align: middle;
-}
-.nav-button {
-  background-color: #e2e8f0; /* Light mode solid color instead of rgba */
-  padding: 7px 11px; /* Adjusted to account for border */
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  border: 1px solid transparent; /* Always have border, but transparent in light mode */
-  margin: 20px;
 
+.textcontainer {
+  margin-top: 0px; /* Reduced for less spacing */
+  padding: 0;
 }
-.buttonbar {
-}
+
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
@@ -89,5 +52,171 @@ a {
   }
   100% {
     background-position: 0% 50%;
+  }
+}
+
+/* Adjusting for centering and layout consistency across pages */
+.titleplane,
+.forms-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  min-height: 100vh; /* Ensures full vertical centering */
+}
+
+.title,
+.section-title,
+.textcontainer p,
+h2 {
+  font-size: 32px;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.textcontainer p {
+  font-size: 18px;
+  color: #666;
+}
+
+.buttonbar {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.nav-button {
+  background-color: #e2e8f0;
+  padding: 12px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: #333;
+  border: 1px solid transparent;
+}
+
+.nav-button:hover {
+  transform: translateY(-2px);
+  background-color: #cbd5e1;
+}
+
+.form-wrapper {
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.input-block {
+  margin-bottom: 20px;
+}
+
+.input-block label {
+  font-size: 14px;
+  color: #4a5568;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.input-block input {
+  display: block;
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 16px;
+  color: #2d3748;
+  background: #eef9fe;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  transition: border-color 0.2s ease;
+}
+
+.input-block input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.btn-login,
+.btn-signup {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 25px;
+  background-color: white; /* Shared background */
+  color: #a7e245; /* Shared text color */
+  border: 2px solid #a7e245; /* Shared border */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-login:hover,
+.btn-signup:hover {
+  background-color: #f0f9ff; /* Shared hover effect */
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #1f2937;
+  }
+
+  .title,
+  .section-title {
+    color: #f3f4f6;
+  }
+
+  .textcontainer p {
+    color: #9ca3af;
+  }
+
+  .nav-button {
+    background-color: #374151;
+    color: #f3f4f6;
+    border-color: #4b5563;
+  }
+
+  .nav-button:hover {
+    background-color: #4b5563;
+  }
+
+  .form-wrapper {
+    background-color: #262f3d;
+  }
+
+  .input-block label {
+    color: #9ca3af;
+  }
+
+  .input-block input {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f3f4f6;
+  }
+
+  .input-block input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  }
+
+  /* Combined button styles for dark mode */
+  .btn-login,
+  .btn-signup {
+    background-color: #1f2937;
+    color: #a7e245;
+    border: 2px solid #a7e245;
+  }
+
+  .btn-login:hover,
+  .btn-signup:hover {
+    background-color: #f0f9ff;
   }
 }

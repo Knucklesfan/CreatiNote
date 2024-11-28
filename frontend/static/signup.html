@@ -1,32 +1,50 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Creatinote - Signup</title>
-        <link rel="stylesheet" href="App.css">
-    </head>
-    <body>
-        <div class="topnav">
-            <h2 class="topnavlogo"><a href="index.html">CREATINOTE</a></h2>
-            <div class="topnavlink">
-                <a href="login.html">Login</a>
-                <a href="signup.html">Create Account</a>    
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="App.css" />
+    <title>Sign Up - CreatiNote</title>
+  </head>
+  <body>
+    <div class="app-container">
+      <section class="forms-section">
+        <a href="index.html" class="animate-character"
+        >Welcome to CreatiNote</a
+      >
+    </h1>
+        <div class="form-wrapper">
+          <h2>Sign Up</h2>
+          <form id="signupForm">
+            <div class="input-block">
+              <label for="email">E-mail</label>
+              <input type="email" id="email" name="email" required />
             </div>
-        </div> 
-        <div class="titleplane">
-            <form  action="attemptUserLogin" method="post">
-                <label for="username">Username: </label>
-                <input id="username"></input>
-                <br>
-                <br>
-                <label for="password">Password: </label>
-                <input id="password" type="password"></input>
-                <br>
-                <br>
-                <label for="repeatpassword">Repeat Password: </label>
-                <input id="repeatpassword" type="password"></input>
-                <br>
-
-                <button class="nav-button">Sign Up</a>
-            </form>
-        </body>
+            <div class="input-block">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                minlength="8"
+              />
+            </div>
+            <div class="input-block">
+              <label for="confirmPassword">Confirm Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                required
+                minlength="8"
+              />
+            </div>
+            <button type="submit" class="btn-signup">Continue</button>
+          </form>
+        </div>
+      </section>
+    </div>
+    <script src="forms.js"></script>
+  </body>
 </html>
