@@ -44,7 +44,8 @@ RUN npm ci
 COPY ./frontend/ .
 RUN npm run build
 RUN mv /usr/src/frontend/build/index.html /usr/src/frontend/build/app.html
-RUN mv /usr/src/frontend/static/** /usr/src/frontend/build/
+COPY ./static /usr/src/static
+RUN mv /usr/src/static/** /usr/src/frontend/build/
 #
 # final layer: include just go-binary and static html 'dist' 
 #

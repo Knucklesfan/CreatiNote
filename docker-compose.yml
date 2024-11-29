@@ -1,5 +1,7 @@
 services:
     creatinote-db:
+        volumes:
+            - db_data:/var/lib/mysql
         environment:
             MARIADB_ROOT_PASSWORD: ${CREATINOTEDB_ROOT_PASSWORD}
             MARIADB_DATABASE: creatinote
@@ -16,14 +18,20 @@ services:
             interval: 10s
             timeout: 5s
             retries: 3
+        ports:
+            - 3306:3306
+
     creatinote:
         depends_on:
             creatinote-db:
                 condition: service_healthy
         image: creatinote:staging
         environment:
-            DB_IP: creatinote-db
-            DB_PORT: 3306
+            MARIADB_DATABASE: creatinote
+            MARIADB_USERNAME: creatinote
+            MARIADB_PASSWORD: ${CREATINOTEDB_PASSWORD}
+            MARIADB_IPADDR: creatinote-db # the container name can be passed as an ip addr
+            MARIADB_PORT: 3306
         ports:
             - 8080:8080
         secrets:
@@ -35,3 +43,5 @@ secrets:
     file: ./prod/db_root_password.txt
   db_password:
     file: ./prod/db_password.txt
+volumes:
+    db_data:
