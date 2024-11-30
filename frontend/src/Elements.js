@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export const HelpPanel = ({ isOpen, darkMode }) => {
   const helpSections = [
@@ -222,36 +222,65 @@ const ChevronButton = ({ isOpen, onClick, darkMode }) => {
     </div>
   );
 };
-
-const NotesPanel = ({ isOpen, darkMode }) => {
-  return (
-    <div
-      className={`notes-panel ${isOpen ? "open" : ""} ${
-        darkMode ? "dark-mode" : ""
-      }`}
-    >
-      <h3 className="notes-panel-title">Saved Notes</h3>
-      <div className="notes-list">
-        <div className="note-item">Example Note 1</div>
-        <div className="note-item">Example Note 2</div>
-        <div className="note-item">Example Note 3</div>
-      </div>
+const Note = ({id,formalname,timecreated,lastmodified}) => {
+  return <div className="note-item">
+    <h2>{formalname}</h2>
+    <p>Created on {timecreated}, last updated {lastmodified}.</p>
     </div>
-  );
-};
+}
 
-export const NavigationPanel = ({ darkMode }) => {
-  const [isNotesPanelOpen, setIsNotesPanelOpen] = useState(false);
+const NotesList = ({}) => {
+  const [loading, setLoading] = useState(false); 
+  const [notes, setNotes] = useState([]); 
 
+  useEffect(() => {
+    const getList = async () => {
+      setLoading(true);
+      let request = await fetch("getsheets", {
+        method: "POST",
+      })
+      let json = await request.json()
+      console.log(json)
+      setNotes(json)
+      setLoading(false);
+    }  
+    getList();
+
+  },[])
+  return ( 
+    <> 
+        <div className="App"> 
+            {loading ? ( 
+                <h4>Loading...</h4> 
+            ) : ( 
+                notes.map((extractednote) => ( 
+                    // Presently we only fetch 
+                    // title from the API 
+                    <Note 
+                    id={extractednote.id}
+                    formalname={extractednote.formalname} 
+                    lastmodified={extractednote.lastmodified} 
+                    timecreated={extractednote.timecreated}/>
+                )) 
+            )} 
+        </div> 
+    </> 
+); 
+}
+const NotesPanel = ({ isOpen, darkMode }) => {
   const handleCreateNote = () => {
     console.log("Create Note clicked");
+    fetch("createsheet", {
+      method: "POST",
+      body: JSON.stringify({
+        filename: "Untitled Note",
+      }),
+}).then(request => {
+      request.json().then(result => {
+        console.log(result);
+      })
+    });
   };
-
-  const toggleNotesPanel = (e) => {
-    e.stopPropagation();
-    setIsNotesPanelOpen(!isNotesPanelOpen);
-  };
-
   const handleDeleteNote = () => {
     console.log("Delete Note clicked");
   };
@@ -265,29 +294,49 @@ export const NavigationPanel = ({ darkMode }) => {
   };
 
   return (
-    <>
-      <div className="nav-panel">
-        <div className="create-note-wrapper">
-          <NavButton
+    <div
+      className={`notes-panel ${isOpen ? "open" : ""} ${
+        darkMode ? "dark-mode" : ""
+      }`}
+    >
+            <NavButton
             text="Create Note"
             onClick={handleCreateNote}
             darkMode={darkMode}
           />
+        <NavButton text="Groups" onClick={handleGroups} darkMode={darkMode} />
+        <NavButton text="Share" onClick={handleShare} darkMode={darkMode} />
+
+      <h3 className="notes-panel-title">Saved Notes</h3>
+      <div className="notes-list">
+        <NotesList/>
+      </div>
+    </div>
+  );
+};
+
+export const NavigationPanel = ({ darkMode }) => {
+  const [isNotesPanelOpen, setIsNotesPanelOpen] = useState(false);
+
+
+  const toggleNotesPanel = (e) => {
+    e.stopPropagation();
+    setIsNotesPanelOpen(!isNotesPanelOpen);
+  };
+
+  return (
+    <>
+      <div className="nav-panel">
+        <div className="create-note-wrapper">
           <ChevronButton
             isOpen={isNotesPanelOpen}
             onClick={toggleNotesPanel}
             darkMode={darkMode}
           />
         </div>
-        <NavButton
-          text="Delete Note"
-          onClick={handleDeleteNote}
-          darkMode={darkMode}
-        />
-        <NavButton text="Groups" onClick={handleGroups} darkMode={darkMode} />
-        <NavButton text="Share" onClick={handleShare} darkMode={darkMode} />
       </div>
-      <NotesPanel isOpen={isNotesPanelOpen} darkMode={darkMode} />
+      <NotesPanel isOpen={isNotesPanelOpen} darkMode={darkMode}>
+        </NotesPanel>
     </>
   );
 };

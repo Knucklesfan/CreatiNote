@@ -42,7 +42,7 @@ COPY ./frontend/yarn.lock .
 RUN npm install
 RUN npm ci
 COPY ./frontend/ .
-RUN npm run build
+RUN npm run build --debug
 RUN mv /usr/src/frontend/build/index.html /usr/src/frontend/build/app.html
 COPY ./static /usr/src/static
 RUN mv /usr/src/static/** /usr/src/frontend/build/

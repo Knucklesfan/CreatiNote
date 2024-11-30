@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -34,7 +35,6 @@ func loadSecrets() {
 }
 func connectDB() *sql.DB {
 	loadSecrets()
-	// Replace "username", "password", "dbname" with your database credentials
 	connectionString := databaseusername + ":" + databasepassword + "@tcp(" + ipaddr + ":" + port + ")/" + database
 	db, err := sql.Open("mysql", connectionString)
 	if err != nil {
@@ -43,15 +43,18 @@ func connectDB() *sql.DB {
 	return db
 }
 func checkTable(tablename string, db *sql.DB) bool {
-	row, err := db.Query("SHOW TABLES LIKE \"" + tablename + "\"")
+	rows, err := db.Query("SHOW TABLES LIKE \"" + tablename + "\"") //stupid and disgusting code i hate
+
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	if err := row.Scan(); err != nil {
-		return false
+	var tablecount = 0
+	for rows.Next() {
+		tablecount++
 	}
-	return true
+	defer rows.Close()
+
+	return tablecount > 0
 
 }
 func getLogin(username string, password string, db *sql.DB) int {
@@ -96,7 +99,10 @@ func createDBTables(db *sql.DB) {
 			id int NOT NULL AUTO_INCREMENT,
 			userId int NOT NULL,
 			filename varchar(255) NOT NULL,
+			formalname varchar(255) NOT NULL,
 			shareFlag int NOT NULL,
+			lastmodified BIGINT,
+			timecreated BIGINT,
 			PRIMARY KEY (id)
 		); `, db) {
 			log.Fatal("Failed to create Notes table for whatever reason")
@@ -135,7 +141,10 @@ func initializeDB(db *sql.DB) { //make sure there is a database on the system
 	}
 
 }
-
+func initializeFilesystem() {
+	newpath := filepath.Join("/app/notes")
+	os.MkdirAll(newpath, os.ModePerm)
+}
 func queryNoArgsNoResponse(query string, db *sql.DB) bool {
 	row, err := db.Query(query)
 	if err != nil {
@@ -152,7 +161,7 @@ func queryNoArgsResponse(query string, db *sql.DB) *sql.Rows {
 	return row
 }
 func queryWithResponse(query string, db *sql.DB, args ...any) *sql.Row {
-	row := db.QueryRow(query, args)
+	row := db.QueryRow(query, args...)
 	if row.Err() != nil {
 		fmt.Println("ERROR FOUND IN " + query)
 		fmt.Println(row.Err().Error())
@@ -162,7 +171,7 @@ func queryWithResponse(query string, db *sql.DB, args ...any) *sql.Row {
 
 }
 func queryWithNoResponse(query string, db *sql.DB, args ...any) bool {
-	row := db.QueryRow(query, args)
+	row := db.QueryRow(query, args...)
 	if row.Err() != nil {
 		fmt.Println("ERROR FOUND IN " + query)
 		fmt.Println(row.Err().Error())

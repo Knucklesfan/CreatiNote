@@ -22,6 +22,8 @@ services:
             - 3306:3306
 
     creatinote:
+        volumes:
+            - note_data:/app/notes
         depends_on:
             creatinote-db:
                 condition: service_healthy
@@ -45,3 +47,4 @@ secrets:
     file: ./prod/db_password.txt
 volumes:
     db_data:
+    note_data:
