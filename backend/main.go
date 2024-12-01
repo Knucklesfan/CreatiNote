@@ -175,6 +175,61 @@ func createSheet(w http.ResponseWriter, r *http.Request) { //creates a note
 
 	}
 }
+func renameSheet(w http.ResponseWriter, r *http.Request) { //creates a note
+	store, err := session.Start(context.Background(), w, r)
+	if err != nil {
+		fmt.Fprint(w, err)
+		return
+	}
+	var dat map[string]interface{}
+
+	var body, exception = io.ReadAll(r.Body)
+	if exception != nil {
+		http.Error(w, "Failed to read body data sent.", http.StatusBadRequest)
+		return
+	}
+
+	if err := json.Unmarshal(body, &dat); err != nil {
+		http.Error(w, "Failed to read json data sent.", http.StatusBadRequest)
+		return
+	}
+	// noteid := dat["id"].(int64)
+	// notename := dat["notename"].(string)
+
+	token, ok := store.Get("token")
+
+	if ok {
+		userid, ok := store.Get("userId")
+		if ok {
+			stmt, err := db.Prepare("SELECT userId,token FROM Sessions WHERE userId = ? AND token = ? ")
+			if err != nil {
+				log.Fatal(err)
+			}
+			var usertkn = ""
+			var id int64 = 0
+			stmt.QueryRow(userid, token).Scan(&id, &usertkn)
+			fmt.Printf("%d %s %d %s\n", userid, token, id, usertkn)
+			if usertkn == token && userid == id {
+				fmt.Printf("User ID: %d\n", id)
+				// notesjson := renameNote(id, noteid, notename, db)
+				// fmt.Println(notesjson)
+				// fmt.Fprintf(w, notesjson)
+			} else {
+				http.Error(w, "Authentication Failed", http.StatusUnauthorized)
+				http.Redirect(w, r, "login.html", http.StatusSeeOther)
+			}
+
+		} else {
+			http.Error(w, "Authentication Failed", http.StatusUnauthorized)
+			http.Redirect(w, r, "login.html", http.StatusSeeOther)
+
+		}
+	} else {
+		http.Error(w, "Authentication Failed", http.StatusUnauthorized)
+		http.Redirect(w, r, "login.html", http.StatusSeeOther)
+
+	}
+}
 func getsheets(w http.ResponseWriter, r *http.Request) { //gets a user's list of sheets
 	store, err := session.Start(context.Background(), w, r)
 	if err != nil {
@@ -340,6 +395,7 @@ func main() {
 	http.HandleFunc("/attemptuserlogin", login)
 	http.HandleFunc("/attemptuserregister", signup)
 	http.HandleFunc("/createsheet", createSheet)
+	http.HandleFunc("/renamesheet", renameSheet)
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)

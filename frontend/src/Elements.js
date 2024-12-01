@@ -223,9 +223,36 @@ const ChevronButton = ({ isOpen, onClick, darkMode }) => {
   );
 };
 const Note = ({id,formalname,timecreated,lastmodified}) => {
+  const renameNote = () => {
+    let newname = prompt('Please choose a new name for your note.');
+    let bodydata = JSON.stringify({
+      "notename": newname,
+      "id": id
+    })
+    console.log(bodydata)
+    let request = fetch("renamesheet", {
+      method: "POST",
+      body: bodydata
+    }).then((result)=> {
+      let json = request.json().then((json)=> {
+
+      })
+
+    })
+
+  }
+  const deleteNote = () => {
+
+  }
   return <div className="note-item">
     <h2>{formalname}</h2>
-    <p>Created on {timecreated}, last updated {lastmodified}.</p>
+    <p>Created on {new Date(timecreated).toDateString()}, last updated {new Date(lastmodified).toDateString()}.</p>
+    <div>
+    <div className={`nav-button hamburger-button note-button`} onClick={renameNote}>Delete</div>
+    <div className={`nav-button hamburger-button note-button`}>Rename</div>
+
+    </div>
+    
     </div>
 }
 

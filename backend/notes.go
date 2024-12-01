@@ -76,7 +76,7 @@ func renameNote(userid int64, noteid int64, title string, db *sql.DB) string {
 	var usrid int64 = 0
 	notedb.Scan(&usrid, &filename)
 	if usrid == userid {
-		notedb := queryWithNoResponse("UPDATE Notes SET formalname=? WHERE id = ?", db, time.Now().UnixMilli(), usrid)
+		notedb := queryWithNoResponse("UPDATE Notes SET formalname=? WHERE id = ?", db, title, usrid)
 		if !notedb {
 			return `{"success":false}`
 		}

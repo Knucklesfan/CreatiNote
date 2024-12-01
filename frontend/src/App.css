@@ -32,7 +32,12 @@
 .create-note-wrapper {
   position: relative;
 }
-
+.note-button {
+  top:10px;
+  right: 10px;
+  width:fit-content;
+  height:fit-content;
+}
 .nav-button {
   background-color: #e2e8f0; /* Light mode solid color instead of rgba */
   padding: 7px 11px; /* Adjusted to account for border */
@@ -88,7 +93,6 @@
 
 /* Notes panel styling */
 .notes-panel {
-  position: fixed;
   top: 80px;
   left: -321px;
   width: 300px;
