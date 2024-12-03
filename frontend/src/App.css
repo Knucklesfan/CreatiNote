@@ -33,10 +33,10 @@
   position: relative;
 }
 .note-button {
-  top:10px;
+  top: 10px;
   right: 10px;
-  width:fit-content;
-  height:fit-content;
+  width: fit-content;
+  height: fit-content;
 }
 .nav-button {
   background-color: #e2e8f0; /* Light mode solid color instead of rgba */
@@ -91,24 +91,33 @@
   transform: rotate(90deg) translateY(-2px);
 }
 
-/* Notes panel styling */
 .notes-panel {
+  position: fixed;
   top: 80px;
-  left: -40%;
+  left: -321px;
   width: 300px;
   height: calc(100vh - 100px);
   background-color: #faf8f0;
-  border-radius: 0 8px 0 0;
+  /* top-left | top-right | bottom-right | bottom-left */
+  border-radius: 0 8px 0 0; /* Exactly matching help panel */
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
   padding: 20px;
   z-index: 900;
-  position:absolute;
-  overflow-y: scroll
+  overflow-y: auto;
+}
+
+.notes-panel-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+  align-items: flex-start;
+  width: 100%;
 }
 
 .notes-panel.open {
-  left: 16px
+  transform: translateX(320px);
 }
 
 .notes-panel-title {

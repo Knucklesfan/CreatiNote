@@ -222,123 +222,149 @@ const ChevronButton = ({ isOpen, onClick, darkMode }) => {
     </div>
   );
 };
-const Note = ({id,formalname,timecreated,lastmodified}) => {
-  const [title, setTitle] = useState(formalname); 
-  const [notes, setNotes] = useState([]); 
 
-  const renameNote = () => {
-    let newname = prompt('Please choose a new name for your note.');
-    let bodydata = JSON.stringify({
-      "notename": newname,
-      "id": id
-    })
-    console.log(bodydata)
-    let request = fetch("renamesheet", {
-      method: "POST",
-      body: bodydata
-    }).then((result)=> {
-      let js = result.json().then((json)=> {
-          if(json.success == true) {
-            setTitle(newname)
-          }
-      })
+const Note = ({ id, formalname, timecreated, lastmodified }) => {
+  const [title, setTitle] = useState(formalname);
 
-    })
+  const renameNote = async () => {
+    const newname = prompt("Please choose a new name for your note.");
+    if (!newname) return;
 
-  }
-  const deleteNote = () => {
-    let bodydata = JSON.stringify({
-      "id": id
-    })
-    console.log(bodydata)
-    let request = fetch("deletesheet", {
-      method: "POST",
-      body: bodydata
-    }).then((result)=> {
-      let js = result.json().then((json)=> {
-          if(json.success == true) {
-            window.location.reload();
-          }
-      })
+    try {
+      const response = await fetch("/renamesheet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          notename: newname,
+          id: id,
+        }),
+      });
+      const json = await response.json();
+      if (json.success) {
+        setTitle(newname);
+      }
+    } catch (error) {
+      console.error("Error renaming note:", error);
+    }
+  };
 
-    })
+  const deleteNote = async () => {
+    try {
+      const response = await fetch("/deletesheet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: id }),
+      });
+      const json = await response.json();
+      if (json.success) {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error deleting note:", error);
+    }
+  };
 
-  }
-  return <div className="note-item">
-    <h2>{title}</h2>
-    <p>Created on {new Date(timecreated).toDateString()}, last updated {new Date(lastmodified).toDateString()}.</p>
-    <div>
-    <div className={`nav-button hamburger-button note-button`} onClick={renameNote}>Rename</div>
-    <div className={`nav-button hamburger-button note-button`} onClick={deleteNote} style={{color:"red"}}>Delete</div>
-
+  return (
+    <div className="note-item">
+      <h2>{title}</h2>
+      <p>
+        Created on {new Date(timecreated).toDateString()}, last updated{" "}
+        {new Date(lastmodified).toDateString()}.
+      </p>
+      <div>
+        <div
+          className="nav-button hamburger-button note-button"
+          onClick={renameNote}
+        >
+          Rename
+        </div>
+        <div
+          className="nav-button hamburger-button note-button"
+          onClick={deleteNote}
+          style={{ color: "red" }}
+        >
+          Delete
+        </div>
+      </div>
     </div>
-    
-    </div>
-}
+  );
+};
 
-const NotesList = ({}) => {
-  const [loading, setLoading] = useState(false); 
-  const [notes, setNotes] = useState([]); 
+const NotesList = () => {
+  const [loading, setLoading] = useState(false);
+  const [notes, setNotes] = useState([]);
+
   const getList = async () => {
     setLoading(true);
-    let request = await fetch("getsheets", {
-      method: "POST",
-    })
-    let json = await request.json()
-    console.log(json)
-    if(json != null) {
-      setNotes(json)
-    }
-    else {
+    try {
+      const response = await fetch("/getsheets", {
+        method: "POST",
+      });
+      const json = await response.json();
+      setNotes(json || []);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
       setNotes([]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }  
-  
-  useEffect(() => {
-
-    getList();
-
-  },[])
-  return ( 
-    <> 
-        <div className="App"> 
-            {loading ? ( 
-                <h4>Loading...</h4> 
-            ) : ( 
-                notes.map((extractednote) => ( 
-                    // Presently we only fetch 
-                    // title from the API 
-                    <Note 
-                    id={extractednote.id}
-                    formalname={extractednote.formalname} 
-                    lastmodified={extractednote.lastmodified} 
-                    timecreated={extractednote.timecreated}/>
-                )) 
-            )} 
-        </div> 
-    </> 
-); 
-}
-const NotesPanel = ({ isOpen, darkMode }) => {
-  const handleCreateNote = () => {
-    fetch("createsheet", {
-      method: "POST",
-      body: JSON.stringify({
-        filename: "Untitled Note",
-      }),
-}).then(request => {
-      request.json().then(result => {
-        console.log(result);
-        if(result.success) {
-          const element = document.getElementById('noteslist');
-
-          window.current_noteid = result.noteid
-          getList()
-        }
-      })
-    });
   };
+
+  useEffect(() => {
+    getList();
+  }, []);
+
+  return (
+    <div className="App">
+      {loading ? (
+        <h4>Loading...</h4>
+      ) : (
+        notes.map((extractednote) => (
+          <Note
+            key={extractednote.id}
+            id={extractednote.id}
+            formalname={extractednote.formalname}
+            lastmodified={extractednote.lastmodified}
+            timecreated={extractednote.timecreated}
+          />
+        ))
+      )}
+    </div>
+  );
+};
+
+const NotesPanel = ({ isOpen, darkMode }) => {
+  const handleCreateNote = async () => {
+    try {
+      const response = await fetch("/createsheet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          filename: "Untitled Note",
+        }),
+      });
+      const result = await response.json();
+      console.log(result);
+      if (result.success) {
+        window.current_noteid = result.noteid;
+        // Refresh the notes list
+        const notesList = document.getElementById("noteslist");
+        if (notesList) {
+          // Trigger a refresh mechanism if needed
+          notesList.dispatchEvent(new Event("refreshList"));
+        }
+      }
+    } catch (error) {
+      console.error("Error creating note:", error);
+    }
+  };
+
   const handleGroups = () => {
     console.log("Groups clicked");
   };
@@ -353,17 +379,19 @@ const NotesPanel = ({ isOpen, darkMode }) => {
         darkMode ? "dark-mode" : ""
       }`}
     >
-            <NavButton
-            text="Create Note"
-            onClick={handleCreateNote}
-            darkMode={darkMode}
-          />
+      <div className="notes-panel-buttons">
+        <NavButton
+          text="Create Note"
+          onClick={handleCreateNote}
+          darkMode={darkMode}
+        />
         <NavButton text="Groups" onClick={handleGroups} darkMode={darkMode} />
         <NavButton text="Share" onClick={handleShare} darkMode={darkMode} />
+      </div>
 
       <h3 className="notes-panel-title">Saved Notes</h3>
       <div className="notes-list" id="noteslist">
-        <NotesList/>
+        <NotesList />
       </div>
     </div>
   );
@@ -371,7 +399,6 @@ const NotesPanel = ({ isOpen, darkMode }) => {
 
 export const NavigationPanel = ({ darkMode }) => {
   const [isNotesPanelOpen, setIsNotesPanelOpen] = useState(false);
-
 
   const toggleNotesPanel = (e) => {
     e.stopPropagation();
@@ -389,8 +416,7 @@ export const NavigationPanel = ({ darkMode }) => {
           />
         </div>
       </div>
-      <NotesPanel isOpen={isNotesPanelOpen} darkMode={darkMode}>
-        </NotesPanel>
+      <NotesPanel isOpen={isNotesPanelOpen} darkMode={darkMode}></NotesPanel>
     </>
   );
 };
