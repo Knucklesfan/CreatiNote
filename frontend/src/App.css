@@ -94,7 +94,7 @@
 /* Notes panel styling */
 .notes-panel {
   top: 80px;
-  left: -321px;
+  left: -40%;
   width: 300px;
   height: calc(100vh - 100px);
   background-color: #faf8f0;
@@ -103,10 +103,12 @@
   transition: transform 0.3s ease;
   padding: 20px;
   z-index: 900;
+  position:absolute;
+  overflow-y: scroll
 }
 
 .notes-panel.open {
-  transform: translateX(320px);
+  left: 16px
 }
 
 .notes-panel-title {

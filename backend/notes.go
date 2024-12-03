@@ -24,7 +24,7 @@ type Note struct {
 }
 type GatewayInfo []Note
 
-func loadNote(userid int, noteid int64, db *sql.DB) string {
+func loadNote(userid int, noteid int, db *sql.DB) string {
 	notedb := queryWithResponse("SELECT userId, filename FROM Notes WHERE id = ?", db, noteid)
 	filename := ""
 	usrid := 0
@@ -70,10 +70,10 @@ func saveNote(userid int64, noteid int64, text string, db *sql.DB) string {
 	}
 
 }
-func renameNote(userid int64, noteid int64, title string, db *sql.DB) string {
+func renameNote(userid int, noteid int, title string, db *sql.DB) string {
 	notedb := queryWithResponse("SELECT userId,filename FROM Notes WHERE id = ?", db, noteid)
 	filename := ""
-	var usrid int64 = 0
+	var usrid = 0
 	notedb.Scan(&usrid, &filename)
 	if usrid == userid {
 		notedb := queryWithNoResponse("UPDATE Notes SET formalname=? WHERE id = ?", db, title, usrid)
@@ -86,6 +86,29 @@ func renameNote(userid int64, noteid int64, title string, db *sql.DB) string {
 	}
 
 }
+func deleteNote(userid int, noteid int, db *sql.DB) string {
+	notedb := queryWithResponse("SELECT userId,filename FROM Notes WHERE id = ?", db, noteid)
+	filename := ""
+	var usrid = 0
+	notedb.Scan(&usrid, &filename)
+	if usrid == userid {
+		notedb := queryWithNoResponse("DELETE FROM Notes WHERE id = ?", db, noteid)
+		e := os.Remove("/app/notes/" + filename)
+		if e != nil {
+			fmt.Println("Failed to delete file from disk")
+			return `{"success":false}`
+
+		}
+		if !notedb {
+			return `{"success":false}`
+		}
+		return `{"success":true}`
+	} else {
+		return `{"success":false}`
+	}
+
+}
+
 func createNote(userid int, formalname string, db *sql.DB) string {
 	reg := regexp.MustCompile(`"[\\/:*?\"\ <>|]"`)
 	filename := strconv.Itoa(userid) + "_" + reg.ReplaceAllString(formalname, "") + "_" + strconv.FormatInt(time.Now().UnixMilli(), 35)
@@ -98,10 +121,17 @@ func createNote(userid int, formalname string, db *sql.DB) string {
 	}
 	time := time.Now().UnixMilli()
 	notedb := queryWithNoResponse("INSERT INTO Notes (userId, filename, formalname, shareFlag,lastmodified, timecreated) VALUES (?,?,?,0,?,?)", db, userid, filename, formalname, time, time)
+	itdb := queryWithResponse("SELECT LAST_INSERT_ID()", db)
+	if err != nil {
+		log.Print(err)
+		return `{"success":false}`
+	}
+	itemnum := 0
+	itdb.Scan(&itemnum)
 	if !notedb {
 		return `{"success":false}`
 	} else {
-		return `{"success": true}`
+		return `{"success": true,"id":` + strconv.Itoa(itemnum) + `}`
 	}
 }
 func getUserNotes(userid int, db *sql.DB) string {

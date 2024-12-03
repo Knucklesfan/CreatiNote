@@ -223,6 +223,9 @@ const ChevronButton = ({ isOpen, onClick, darkMode }) => {
   );
 };
 const Note = ({id,formalname,timecreated,lastmodified}) => {
+  const [title, setTitle] = useState(formalname); 
+  const [notes, setNotes] = useState([]); 
+
   const renameNote = () => {
     let newname = prompt('Please choose a new name for your note.');
     let bodydata = JSON.stringify({
@@ -234,22 +237,39 @@ const Note = ({id,formalname,timecreated,lastmodified}) => {
       method: "POST",
       body: bodydata
     }).then((result)=> {
-      let json = request.json().then((json)=> {
-
+      let js = result.json().then((json)=> {
+          if(json.success == true) {
+            setTitle(newname)
+          }
       })
 
     })
 
   }
   const deleteNote = () => {
+    let bodydata = JSON.stringify({
+      "id": id
+    })
+    console.log(bodydata)
+    let request = fetch("deletesheet", {
+      method: "POST",
+      body: bodydata
+    }).then((result)=> {
+      let js = result.json().then((json)=> {
+          if(json.success == true) {
+            window.location.reload();
+          }
+      })
+
+    })
 
   }
   return <div className="note-item">
-    <h2>{formalname}</h2>
+    <h2>{title}</h2>
     <p>Created on {new Date(timecreated).toDateString()}, last updated {new Date(lastmodified).toDateString()}.</p>
     <div>
-    <div className={`nav-button hamburger-button note-button`} onClick={renameNote}>Delete</div>
-    <div className={`nav-button hamburger-button note-button`}>Rename</div>
+    <div className={`nav-button hamburger-button note-button`} onClick={renameNote}>Rename</div>
+    <div className={`nav-button hamburger-button note-button`} onClick={deleteNote} style={{color:"red"}}>Delete</div>
 
     </div>
     
@@ -259,18 +279,24 @@ const Note = ({id,formalname,timecreated,lastmodified}) => {
 const NotesList = ({}) => {
   const [loading, setLoading] = useState(false); 
   const [notes, setNotes] = useState([]); 
-
-  useEffect(() => {
-    const getList = async () => {
-      setLoading(true);
-      let request = await fetch("getsheets", {
-        method: "POST",
-      })
-      let json = await request.json()
-      console.log(json)
+  const getList = async () => {
+    setLoading(true);
+    let request = await fetch("getsheets", {
+      method: "POST",
+    })
+    let json = await request.json()
+    console.log(json)
+    if(json != null) {
       setNotes(json)
-      setLoading(false);
-    }  
+    }
+    else {
+      setNotes([]);
+    }
+    setLoading(false);
+  }  
+  
+  useEffect(() => {
+
     getList();
 
   },[])
@@ -296,7 +322,6 @@ const NotesList = ({}) => {
 }
 const NotesPanel = ({ isOpen, darkMode }) => {
   const handleCreateNote = () => {
-    console.log("Create Note clicked");
     fetch("createsheet", {
       method: "POST",
       body: JSON.stringify({
@@ -305,13 +330,15 @@ const NotesPanel = ({ isOpen, darkMode }) => {
 }).then(request => {
       request.json().then(result => {
         console.log(result);
+        if(result.success) {
+          const element = document.getElementById('noteslist');
+
+          window.current_noteid = result.noteid
+          getList()
+        }
       })
     });
   };
-  const handleDeleteNote = () => {
-    console.log("Delete Note clicked");
-  };
-
   const handleGroups = () => {
     console.log("Groups clicked");
   };
@@ -335,7 +362,7 @@ const NotesPanel = ({ isOpen, darkMode }) => {
         <NavButton text="Share" onClick={handleShare} darkMode={darkMode} />
 
       <h3 className="notes-panel-title">Saved Notes</h3>
-      <div className="notes-list">
+      <div className="notes-list" id="noteslist">
         <NotesList/>
       </div>
     </div>

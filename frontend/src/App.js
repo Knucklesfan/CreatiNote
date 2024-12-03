@@ -34,6 +34,8 @@ function App() {
     setDarkMode(!darkMode);
     document.documentElement.classList.toggle("dark-mode");
   };
+  window.current_noteid = -1; //not sure if this is the right way to do this,
+  //but https://stackoverflow.com/questions/65610331/correctly-create-global-variables-in-react says its okay
 
   return (
     <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
