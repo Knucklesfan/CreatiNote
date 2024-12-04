@@ -35,37 +35,41 @@ func loadNote(userid int, noteid int, db *sql.DB) string {
 			log.Print(err)
 			return ""
 		}
-		fmt.Print(string(dat))
+		fmt.Println(string(dat))
 		retdata := map[string]interface{}{
-			"noteText": dat,
+			"success":  true,
+			"noteText": string(dat),
 		}
 		jsonData, err := json.Marshal(retdata)
 		if err != nil {
 			fmt.Printf("could not marshal json: %s\n", err)
-			return ""
+			return `{"success":false}`
 		}
 		return string(jsonData)
 	} else {
-		return ""
+		return `{"success":false}`
 	}
 }
-func saveNote(userid int64, noteid int64, text string, db *sql.DB) string {
+func saveNote(userid int, noteid int, text string, db *sql.DB) string {
 	notedb := queryWithResponse("SELECT userId,filename FROM Notes WHERE id = ?", db, noteid)
 	filename := ""
-	var usrid int64 = 0
+	var usrid = 0
 	notedb.Scan(&usrid, &filename)
 	if usrid == userid {
 		err := os.WriteFile("/app/notes/"+filename, []byte(text), 0644)
 		if err != nil {
 			log.Print(err)
+			fmt.Println("Failed to write to file")
 			return `{"success":false}`
 		}
 		notedb := queryWithNoResponse("UPDATE Notes SET lastmodified=? WHERE id = ?", db, time.Now().UnixMilli(), usrid)
 		if !notedb {
+			fmt.Println("Failed to write to database")
 			return `{"success":false}`
 		}
 		return `{"success":true}`
 	} else {
+		fmt.Println("failed to validate user")
 		return `{"success":false}`
 	}
 
@@ -76,7 +80,7 @@ func renameNote(userid int, noteid int, title string, db *sql.DB) string {
 	var usrid = 0
 	notedb.Scan(&usrid, &filename)
 	if usrid == userid {
-		notedb := queryWithNoResponse("UPDATE Notes SET formalname=? WHERE id = ?", db, title, usrid)
+		notedb := queryWithNoResponse("UPDATE Notes SET formalname=? WHERE id = ?", db, title, noteid)
 		if !notedb {
 			return `{"success":false}`
 		}
@@ -121,13 +125,14 @@ func createNote(userid int, formalname string, db *sql.DB) string {
 	}
 	time := time.Now().UnixMilli()
 	notedb := queryWithNoResponse("INSERT INTO Notes (userId, filename, formalname, shareFlag,lastmodified, timecreated) VALUES (?,?,?,0,?,?)", db, userid, filename, formalname, time, time)
-	itdb := queryWithResponse("SELECT LAST_INSERT_ID()", db)
+	itdb := queryWithResponse("SELECT MAX(id) FROM Notes;", db)
 	if err != nil {
 		log.Print(err)
 		return `{"success":false}`
 	}
 	itemnum := 0
 	itdb.Scan(&itemnum)
+	fmt.Println(itemnum)
 	if !notedb {
 		return `{"success":false}`
 	} else {

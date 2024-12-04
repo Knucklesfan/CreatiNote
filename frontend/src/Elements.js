@@ -223,7 +223,7 @@ const ChevronButton = ({ isOpen, onClick, darkMode }) => {
   );
 };
 
-const Note = ({ id, formalname, timecreated, lastmodified }) => {
+const Note = ({ id, formalname, timecreated, lastmodified, updatelist,editor}) => {
   const [title, setTitle] = useState(formalname);
 
   const renameNote = async () => {
@@ -261,15 +261,43 @@ const Note = ({ id, formalname, timecreated, lastmodified }) => {
       });
       const json = await response.json();
       if (json.success) {
-        window.location.reload();
+        // window.location.reload();
+        updatelist();
       }
     } catch (error) {
       console.error("Error deleting note:", error);
     }
   };
+  const loadNote = async () => {
+    console.log("loading text");
+    // try {
+      const response = await fetch("/servesheet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: id,
+        }),
+      });
+      const result = await response.json();
+      console.log(result);
+      if (result.success == true) {
+        let conversion = atob(result.noteText);
+        console.log(conversion)
+        let parsed = JSON.parse(conversion)
+        console.log(parsed)
+        editor.children = parsed
+        editor.onChange()
+      }
+    // } catch (error) {
+    //   console.error("Error creating note:", error);
+    // }
+
+  }
 
   return (
-    <div className="note-item">
+    <div className="note-item" onClick={loadNote}>
       <h2>{title}</h2>
       <p>
         Created on {new Date(timecreated).toDateString()}, last updated{" "}
@@ -294,9 +322,35 @@ const Note = ({ id, formalname, timecreated, lastmodified }) => {
   );
 };
 
-const NotesList = () => {
+const NotesList = ({ darkMode, editor }) => {
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState([]);
+  const handleCreateNote = async () => {
+    try {
+      const response = await fetch("/createsheet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          filename: "Untitled Note",
+        }),
+        
+      });
+      const result = await response.json();
+    
+      console.log(result);
+      if (result.success == true) {
+        console.log("success!")
+        window.current_noteid = result.id;
+        // Refresh the notes list
+        editor.children = initialValue
+          getList();
+      }
+    } catch (error) {
+      console.error("Error creating note:", error);
+    }
+  };
 
   const getList = async () => {
     setLoading(true);
@@ -317,9 +371,16 @@ const NotesList = () => {
   useEffect(() => {
     getList();
   }, []);
-
   return (
     <div className="App">
+      <NavButton
+        text="Create Note"
+        onClick={handleCreateNote}
+        darkMode={darkMode}
+      />
+      <h3 className="notes-panel-title">Saved Notes</h3>
+        <div className="notes-list" id="noteslist">
+
       {loading ? (
         <h4>Loading...</h4>
       ) : (
@@ -330,40 +391,17 @@ const NotesList = () => {
             formalname={extractednote.formalname}
             lastmodified={extractednote.lastmodified}
             timecreated={extractednote.timecreated}
+            updatelist={getList}
+            editor={editor}
           />
         ))
       )}
+      </div>
     </div>
   );
 };
 
-const NotesPanel = ({ isOpen, darkMode }) => {
-  const handleCreateNote = async () => {
-    try {
-      const response = await fetch("/createsheet", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          filename: "Untitled Note",
-        }),
-      });
-      const result = await response.json();
-      console.log(result);
-      if (result.success) {
-        window.current_noteid = result.noteid;
-        // Refresh the notes list
-        const notesList = document.getElementById("noteslist");
-        if (notesList) {
-          // Trigger a refresh mechanism if needed
-          notesList.dispatchEvent(new Event("refreshList"));
-        }
-      }
-    } catch (error) {
-      console.error("Error creating note:", error);
-    }
-  };
+const NotesPanel = ({ isOpen, darkMode, editor }) => {
 
   const handleGroups = () => {
     console.log("Groups clicked");
@@ -380,24 +418,16 @@ const NotesPanel = ({ isOpen, darkMode }) => {
       }`}
     >
       <div className="notes-panel-buttons">
-        <NavButton
-          text="Create Note"
-          onClick={handleCreateNote}
-          darkMode={darkMode}
-        />
         <NavButton text="Groups" onClick={handleGroups} darkMode={darkMode} />
         <NavButton text="Share" onClick={handleShare} darkMode={darkMode} />
       </div>
 
-      <h3 className="notes-panel-title">Saved Notes</h3>
-      <div className="notes-list" id="noteslist">
-        <NotesList />
-      </div>
+        <NotesList darkMode={darkMode} editor={editor}/>
     </div>
   );
 };
 
-export const NavigationPanel = ({ darkMode }) => {
+export const NavigationPanel = ({ darkMode, editor}) => {
   const [isNotesPanelOpen, setIsNotesPanelOpen] = useState(false);
 
   const toggleNotesPanel = (e) => {
@@ -416,7 +446,7 @@ export const NavigationPanel = ({ darkMode }) => {
           />
         </div>
       </div>
-      <NotesPanel isOpen={isNotesPanelOpen} darkMode={darkMode}></NotesPanel>
+      <NotesPanel isOpen={isNotesPanelOpen} darkMode={darkMode} editor={editor}></NotesPanel>
     </>
   );
 };
