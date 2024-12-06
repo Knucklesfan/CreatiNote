@@ -283,12 +283,12 @@ const Note = ({ id, formalname, timecreated, lastmodified, updatelist,editor}) =
       const result = await response.json();
       console.log(result);
       if (result.success == true) {
+        window.current_noteid = id
+        console.log("current note id: " + window.current_noteid)
         let conversion = atob(result.noteText);
-        console.log(conversion)
         let parsed = JSON.parse(conversion)
-        console.log(parsed)
-        editor.children = parsed
-        editor.onChange()
+        window.editor.children = parsed
+        window.editor.onChange()
       }
     // } catch (error) {
     //   console.error("Error creating note:", error);
@@ -344,7 +344,8 @@ const NotesList = ({ darkMode, editor }) => {
         console.log("success!")
         window.current_noteid = result.id;
         // Refresh the notes list
-        editor.children = initialValue
+        window.editor.children = initialValue
+        window.editor.onChange()
           getList();
       }
     } catch (error) {
