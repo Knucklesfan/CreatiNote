@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import { b64DecodeUnicode } from "./utils";
 export const HelpPanel = ({ isOpen, darkMode }) => {
   const helpSections = [
     {
@@ -278,53 +278,97 @@ const Note = ({
   const loadNote = async () => {
     console.log("loading text");
     // try {
-    const response = await fetch("/servesheet", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: id,
-      }),
-    });
-    const result = await response.json();
-    console.log(result);
-    if (result.success == true) {
-      window.current_noteid = id;
-      console.log("current note id: " + window.current_noteid);
-      let conversion = atob(result.noteText);
-      let parsed = JSON.parse(conversion);
-      window.editor.children = parsed;
-      window.editor.onChange();
-    }
+      const response = await fetch("/servesheet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: id,
+        }),
+      });
+      const result = await response.json();
+      console.log(result);
+      if (result.success == true) {
+        window.current_noteid = id
+        console.log("current note id: " + window.current_noteid)
+        let conversion = b64DecodeUnicode(result.noteText);
+        console.log(conversion)
+        let parsed = JSON.parse(conversion)
+        console.log(parsed)
+        editor.children = parsed
+        editor.onChange()
+      }
     // } catch (error) {
     //   console.error("Error creating note:", error);
     // }
   };
 
   return (
-    <div className="note-item" onClick={loadNote}>
-      <h2>{title}</h2>
-      <p>
-        Created on {new Date(timecreated).toDateString()}, last updated{" "}
-        {new Date(lastmodified).toDateString()}.
-      </p>
-      <div>
-        <div
-          className="nav-button hamburger-button note-button"
-          onClick={renameNote}
-        >
-          Rename
-        </div>
-        <div
-          className="nav-button hamburger-button note-button"
-          onClick={deleteNote}
-          style={{ color: "red" }}
-        >
-          Delete
-        </div>
-      </div>
+<div
+  className="note-item"
+  onClick={loadNote}
+  style={{
+    padding: "12px",
+    backgroundColor: "white",
+    borderRadius: "6px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
+    cursor: "pointer",
+    transition: "transform 0.2s ease",
+    marginBottom: "16px",
+  }}
+>
+  <h2 style={{ marginBottom: "8px", fontSize: "1.2rem", color: "#333" }}>
+    {title}
+  </h2>
+  <p style={{ marginBottom: "16px", color: "#555", fontSize: "0.9rem" }}>
+    Created on {new Date(timecreated).toDateString()}, last updated{" "}
+    {new Date(lastmodified).toDateString()}.
+  </p>
+  <div
+    style={{
+      display: "flex",
+      gap: "10px",
+      justifyContent: "flex-start",
+    }}
+  >
+    <div
+      className="nav-button hamburger-button note-button"
+      onClick={renameNote}
+      style={{
+        backgroundColor: "#e2e8f0",
+        padding: "7px 11px",
+        borderRadius: "20px",
+        fontWeight: "bold",
+        fontSize: "14px",
+        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        transition: "all 0.2s ease",
+        border: "1px solid transparent",
+      }}
+    >
+      Rename
     </div>
+    <div
+      className="nav-button hamburger-button note-button"
+      onClick={deleteNote}
+      style={{
+        backgroundColor: "#ff4d4d",
+        color: "white",
+        padding: "7px 11px",
+        borderRadius: "20px",
+        fontWeight: "bold",
+        fontSize: "14px",
+        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        transition: "all 0.2s ease",
+        border: "1px solid transparent",
+      }}
+    >
+      Delete
+    </div>
+  </div>
+</div>
   );
 };
 
@@ -348,9 +392,10 @@ const NotesList = ({ darkMode, editor }) => {
       if (result.success === true) {
         console.log("Note created successfully!");
         window.current_noteid = result.id;
-        window.editor.children = initialValue;
-        window.editor.onChange();
-        getList();
+        // Refresh the notes list
+        editor.children = initialValue
+        editor.onChange()
+          getList();
       }
     } catch (error) {
       console.error("Error creating note:", error);
