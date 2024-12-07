@@ -223,7 +223,14 @@ const ChevronButton = ({ isOpen, onClick, darkMode }) => {
   );
 };
 
-const Note = ({ id, formalname, timecreated, lastmodified, updatelist,editor}) => {
+const Note = ({
+  id,
+  formalname,
+  timecreated,
+  lastmodified,
+  updatelist,
+  editor,
+}) => {
   const [title, setTitle] = useState(formalname);
 
   const renameNote = async () => {
@@ -295,8 +302,7 @@ const Note = ({ id, formalname, timecreated, lastmodified, updatelist,editor}) =
     // } catch (error) {
     //   console.error("Error creating note:", error);
     // }
-
-  }
+  };
 
   return (
 <div
@@ -369,6 +375,7 @@ const Note = ({ id, formalname, timecreated, lastmodified, updatelist,editor}) =
 const NotesList = ({ darkMode, editor }) => {
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState([]);
+
   const handleCreateNote = async () => {
     try {
       const response = await fetch("/createsheet", {
@@ -379,13 +386,11 @@ const NotesList = ({ darkMode, editor }) => {
         body: JSON.stringify({
           filename: "Untitled Note",
         }),
-        
       });
       const result = await response.json();
-    
-      console.log(result);
-      if (result.success == true) {
-        console.log("success!")
+
+      if (result.success === true) {
+        console.log("Note created successfully!");
         window.current_noteid = result.id;
         // Refresh the notes list
         editor.children = initialValue
@@ -416,63 +421,63 @@ const NotesList = ({ darkMode, editor }) => {
   useEffect(() => {
     getList();
   }, []);
-  return (
-    <div className="App">
-      <NavButton
-        text="Create Note"
-        onClick={handleCreateNote}
-        darkMode={darkMode}
-      />
-      <h3 className="notes-panel-title">Saved Notes</h3>
-        <div className="notes-list" id="noteslist">
 
-      {loading ? (
-        <h4>Loading...</h4>
-      ) : (
-        notes.map((extractednote) => (
-          <Note
-            key={extractednote.id}
-            id={extractednote.id}
-            formalname={extractednote.formalname}
-            lastmodified={extractednote.lastmodified}
-            timecreated={extractednote.timecreated}
-            updatelist={getList}
-            editor={editor}
-          />
-        ))
-      )}
+  return (
+    <div className="notes-list-wrapper">
+      <div className="notes-panel-buttons">
+        {/* Place Create Note button first */}
+        <NavButton
+          text="Create Note"
+          onClick={handleCreateNote}
+          darkMode={darkMode}
+        />
+        <NavButton
+          text="Groups"
+          onClick={() => console.log("Groups clicked")}
+          darkMode={darkMode}
+        />
+        <NavButton
+          text="Share"
+          onClick={() => console.log("Share clicked")}
+          darkMode={darkMode}
+        />
+      </div>
+
+      <h3 className="notes-panel-title">Saved Notes</h3>
+      <div className="notes-list" id="noteslist">
+        {loading ? (
+          <h4>Loading...</h4>
+        ) : (
+          notes.map((extractednote) => (
+            <Note
+              key={extractednote.id}
+              id={extractednote.id}
+              formalname={extractednote.formalname}
+              lastmodified={extractednote.lastmodified}
+              timecreated={extractednote.timecreated}
+              updatelist={getList}
+              editor={editor}
+            />
+          ))
+        )}
       </div>
     </div>
   );
 };
 
 const NotesPanel = ({ isOpen, darkMode, editor }) => {
-
-  // const handleGroups = () => {
-  //   console.log("Groups clicked");
-  // };
-
-  // const handleShare = () => {
-  //   console.log("Share clicked");
-  // };
-
   return (
     <div
       className={`notes-panel ${isOpen ? "open" : ""} ${
         darkMode ? "dark-mode" : ""
       }`}
     >
-      <div className="notes-panel-buttons">
-        {/* <NavButton text="Groups" onClick={handleGroups} darkMode={darkMode} />
-        <NavButton text="Share" onClick={handleShare} darkMode={darkMode} /> */}
-      </div>
-
-        <NotesList darkMode={darkMode} editor={editor}/>
+      <NotesList darkMode={darkMode} editor={editor} />
     </div>
   );
 };
 
-export const NavigationPanel = ({ darkMode, editor}) => {
+export const NavigationPanel = ({ darkMode, editor }) => {
   const [isNotesPanelOpen, setIsNotesPanelOpen] = useState(false);
 
   const toggleNotesPanel = (e) => {
@@ -491,7 +496,11 @@ export const NavigationPanel = ({ darkMode, editor}) => {
           />
         </div>
       </div>
-      <NotesPanel isOpen={isNotesPanelOpen} darkMode={darkMode} editor={editor}></NotesPanel>
+      <NotesPanel
+        isOpen={isNotesPanelOpen}
+        darkMode={darkMode}
+        editor={editor}
+      ></NotesPanel>
     </>
   );
 };

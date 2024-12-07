@@ -3,18 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@slate-yjs/core": "^1.0.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "linkify-it": "^4.0.1",
+    "lucide-react": "^0.327.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1",
     "slate": "^0.103.0",
-    "slate-react": "^0.110.1",
     "slate-history": "0.109.0",
+    "slate-react": "^0.110.1",
     "web-vitals": "^2.1.4",
-    "lucide-react": "^0.327.0",
-    "linkify-it": "^4.0.1"
+    "yjs": "^13.6.20",
+    "@hocuspocus/provider": "^2.14.0"
   },
   "scripts": {
     "start": "react-scripts start",
