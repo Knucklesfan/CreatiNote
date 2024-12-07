@@ -230,6 +230,7 @@ const Note = ({
   lastmodified,
   updatelist,
   editor,
+  darkMode,
 }) => {
   const [title, setTitle] = useState(formalname);
 
@@ -350,7 +351,10 @@ const Note = ({
           className={`nav-button hamburger-button note-button ${
             darkMode ? "dark-mode" : ""
           }`}
-          onClick={renameNote}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent note loading when clicking rename
+            renameNote();
+          }}
           style={{
             backgroundColor: darkMode ? "#4b5563" : "#e2e8f0",
             color: darkMode ? "#f3f4f6" : "#333",
@@ -370,7 +374,10 @@ const Note = ({
           className={`nav-button hamburger-button note-button ${
             darkMode ? "dark-mode" : ""
           }`}
-          onClick={deleteNote}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent note loading when clicking delete
+            deleteNote();
+          }}
           style={{
             backgroundColor: darkMode ? "#ff4d4d" : "#ff4d4d",
             color: darkMode ? "#f3f4f6" : "white",
@@ -394,6 +401,7 @@ const Note = ({
 const NotesList = ({ darkMode, editor }) => {
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState([]);
+
   const handleCreateNote = async () => {
     try {
       const response = await fetch("/createsheet", {
@@ -440,20 +448,33 @@ const NotesList = ({ darkMode, editor }) => {
   useEffect(() => {
     getList();
   }, []);
+
   return (
     <div className="notes-list-wrapper">
       <div className="notes-panel-buttons">
         {/* Place Create Note button first */}
-        <NavButton
-          text="Create Note"
+        <div
+          className={`nav-button ${darkMode ? "dark-mode" : ""}`}
           onClick={handleCreateNote}
-          darkMode={darkMode}
-        />
+          style={{
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+        >
+          <span className="animate-character">Create Note</span>
+        </div>
       </div>
-      <h3 className="notes-panel-title">Saved Notes</h3>
+      <h3
+        className="notes-panel-title"
+        style={{
+          color: darkMode ? "#f3f4f6" : "#333",
+        }}
+      >
+        Saved Notes
+      </h3>
       <div className="notes-list" id="noteslist">
         {loading ? (
-          <h4>Loading...</h4>
+          <h4 style={{ color: darkMode ? "#f3f4f6" : "#333" }}>Loading...</h4>
         ) : (
           notes.map((extractednote) => (
             <Note
@@ -464,6 +485,7 @@ const NotesList = ({ darkMode, editor }) => {
               timecreated={extractednote.timecreated}
               updatelist={getList}
               editor={editor}
+              darkMode={darkMode} // Pass darkMode prop
             />
           ))
         )}
