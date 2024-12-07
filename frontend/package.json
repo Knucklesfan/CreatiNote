@@ -16,7 +16,8 @@
     "slate-history": "0.109.0",
     "slate-react": "^0.110.1",
     "web-vitals": "^2.1.4",
-    "yjs": "^13.6.20"
+    "yjs": "^13.6.20",
+    "@hocuspocus/provider": "^2.14.0"
   },
   "scripts": {
     "start": "react-scripts start",
