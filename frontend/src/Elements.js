@@ -223,7 +223,14 @@ const ChevronButton = ({ isOpen, onClick, darkMode }) => {
   );
 };
 
-const Note = ({ id, formalname, timecreated, lastmodified, updatelist,editor}) => {
+const Note = ({
+  id,
+  formalname,
+  timecreated,
+  lastmodified,
+  updatelist,
+  editor,
+}) => {
   const [title, setTitle] = useState(formalname);
 
   const renameNote = async () => {
@@ -271,98 +278,97 @@ const Note = ({ id, formalname, timecreated, lastmodified, updatelist,editor}) =
   const loadNote = async () => {
     console.log("loading text");
     // try {
-      const response = await fetch("/servesheet", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: id,
-        }),
-      });
-      const result = await response.json();
-      console.log(result);
-      if (result.success == true) {
-        window.current_noteid = id
-        console.log("current note id: " + window.current_noteid)
-        let conversion = b64DecodeUnicode(result.noteText);
-        console.log(conversion)
-        let parsed = JSON.parse(conversion)
-        console.log(parsed)
-        editor.children = parsed
-        editor.onChange()
-      }
+    const response = await fetch("/servesheet", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: id,
+      }),
+    });
+    const result = await response.json();
+    console.log(result);
+    if (result.success == true) {
+      window.current_noteid = id;
+      console.log("current note id: " + window.current_noteid);
+      let conversion = b64DecodeUnicode(result.noteText);
+      console.log(conversion);
+      let parsed = JSON.parse(conversion);
+      console.log(parsed);
+      editor.children = parsed;
+      editor.onChange();
+    }
     // } catch (error) {
     //   console.error("Error creating note:", error);
     // }
-
-  }
+  };
 
   return (
-<div
-  className="note-item"
-  onClick={loadNote}
-  style={{
-    padding: "12px",
-    backgroundColor: "white",
-    borderRadius: "6px",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
-    cursor: "pointer",
-    transition: "transform 0.2s ease",
-    marginBottom: "16px",
-  }}
->
-  <h2 style={{ marginBottom: "8px", fontSize: "1.2rem", color: "#333" }}>
-    {title}
-  </h2>
-  <p style={{ marginBottom: "16px", color: "#555", fontSize: "0.9rem" }}>
-    Created on {new Date(timecreated).toDateString()}, last updated{" "}
-    {new Date(lastmodified).toDateString()}.
-  </p>
-  <div
-    style={{
-      display: "flex",
-      gap: "10px",
-      justifyContent: "flex-start",
-    }}
-  >
     <div
-      className="nav-button hamburger-button note-button"
-      onClick={renameNote}
+      className="note-item"
+      onClick={loadNote}
       style={{
-        backgroundColor: "#e2e8f0",
-        padding: "7px 11px",
-        borderRadius: "20px",
-        fontWeight: "bold",
-        fontSize: "14px",
-        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+        padding: "12px",
+        backgroundColor: "white",
+        borderRadius: "6px",
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
         cursor: "pointer",
-        transition: "all 0.2s ease",
-        border: "1px solid transparent",
+        transition: "transform 0.2s ease",
+        marginBottom: "16px",
       }}
     >
-      Rename
+      <h2 style={{ marginBottom: "8px", fontSize: "1.2rem", color: "#333" }}>
+        {title}
+      </h2>
+      <p style={{ marginBottom: "16px", color: "#555", fontSize: "0.9rem" }}>
+        Created on {new Date(timecreated).toDateString()}, last updated{" "}
+        {new Date(lastmodified).toDateString()}.
+      </p>
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          justifyContent: "flex-start",
+        }}
+      >
+        <div
+          className="nav-button hamburger-button note-button"
+          onClick={renameNote}
+          style={{
+            backgroundColor: "#e2e8f0",
+            padding: "7px 11px",
+            borderRadius: "20px",
+            fontWeight: "bold",
+            fontSize: "14px",
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            border: "1px solid transparent",
+          }}
+        >
+          Rename
+        </div>
+        <div
+          className="nav-button hamburger-button note-button"
+          onClick={deleteNote}
+          style={{
+            backgroundColor: "#ff4d4d",
+            color: "white",
+            padding: "7px 11px",
+            borderRadius: "20px",
+            fontWeight: "bold",
+            fontSize: "14px",
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            border: "1px solid transparent",
+          }}
+        >
+          Delete
+        </div>
+      </div>
     </div>
-    <div
-      className="nav-button hamburger-button note-button"
-      onClick={deleteNote}
-      style={{
-        backgroundColor: "#ff4d4d",
-        color: "white",
-        padding: "7px 11px",
-        borderRadius: "20px",
-        fontWeight: "bold",
-        fontSize: "14px",
-        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-        cursor: "pointer",
-        transition: "all 0.2s ease",
-        border: "1px solid transparent",
-      }}
-    >
-      Delete
-    </div>
-  </div>
-</div>
   );
 };
 
@@ -379,18 +385,17 @@ const NotesList = ({ darkMode, editor }) => {
         body: JSON.stringify({
           filename: "Untitled Note",
         }),
-        
       });
       const result = await response.json();
-    
+
       console.log(result);
       if (result.success == true) {
-        console.log("success!")
+        console.log("success!");
         window.current_noteid = result.id;
         // Refresh the notes list
-        editor.children = initialValue
-        editor.onChange()
-          getList();
+        editor.children = initialValue;
+        editor.onChange();
+        getList();
       }
     } catch (error) {
       console.error("Error creating note:", error);
@@ -417,37 +422,38 @@ const NotesList = ({ darkMode, editor }) => {
     getList();
   }, []);
   return (
-    <div className="App">
-      <NavButton
-        text="Create Note"
-        onClick={handleCreateNote}
-        darkMode={darkMode}
-      />
+    <div className="notes-list-wrapper">
+      <div className="notes-panel-buttons">
+        {/* Place Create Note button first */}
+        <NavButton
+          text="Create Note"
+          onClick={handleCreateNote}
+          darkMode={darkMode}
+        />
+      </div>
       <h3 className="notes-panel-title">Saved Notes</h3>
-        <div className="notes-list" id="noteslist">
-
-      {loading ? (
-        <h4>Loading...</h4>
-      ) : (
-        notes.map((extractednote) => (
-          <Note
-            key={extractednote.id}
-            id={extractednote.id}
-            formalname={extractednote.formalname}
-            lastmodified={extractednote.lastmodified}
-            timecreated={extractednote.timecreated}
-            updatelist={getList}
-            editor={editor}
-          />
-        ))
-      )}
+      <div className="notes-list" id="noteslist">
+        {loading ? (
+          <h4>Loading...</h4>
+        ) : (
+          notes.map((extractednote) => (
+            <Note
+              key={extractednote.id}
+              id={extractednote.id}
+              formalname={extractednote.formalname}
+              lastmodified={extractednote.lastmodified}
+              timecreated={extractednote.timecreated}
+              updatelist={getList}
+              editor={editor}
+            />
+          ))
+        )}
       </div>
     </div>
   );
 };
 
 const NotesPanel = ({ isOpen, darkMode, editor }) => {
-
   // const handleGroups = () => {
   //   console.log("Groups clicked");
   // };
@@ -467,12 +473,12 @@ const NotesPanel = ({ isOpen, darkMode, editor }) => {
         <NavButton text="Share" onClick={handleShare} darkMode={darkMode} /> */}
       </div>
 
-        <NotesList darkMode={darkMode} editor={editor}/>
+      <NotesList darkMode={darkMode} editor={editor} />
     </div>
   );
 };
 
-export const NavigationPanel = ({ darkMode, editor}) => {
+export const NavigationPanel = ({ darkMode, editor }) => {
   const [isNotesPanelOpen, setIsNotesPanelOpen] = useState(false);
 
   const toggleNotesPanel = (e) => {
@@ -491,7 +497,11 @@ export const NavigationPanel = ({ darkMode, editor}) => {
           />
         </div>
       </div>
-      <NotesPanel isOpen={isNotesPanelOpen} darkMode={darkMode} editor={editor}></NotesPanel>
+      <NotesPanel
+        isOpen={isNotesPanelOpen}
+        darkMode={darkMode}
+        editor={editor}
+      ></NotesPanel>
     </>
   );
 };
@@ -510,14 +520,14 @@ export const RightPanel = ({ darkMode, onThemeToggle }) => {
   return (
     <>
       <div className="right-panel">
-        <div
+        {/*<div
           className={`nav-button hamburger-button ${
             darkMode ? "dark-mode" : ""
           }`}
           onClick={handleHamburger}
         >
           <span className="animate-character">☰</span>
-        </div>
+        </div> */}
         <div
           className={`nav-button help-button ${darkMode ? "dark-mode" : ""}`}
           onClick={handleHelp}

@@ -12,42 +12,42 @@ import {
   initialValue,
   withLayout,
 } from "./Elements";
-import { toggleMark, insertList, withLinks, b64EncodeUnicode} from "./utils";
+import { toggleMark, insertList, withLinks, b64EncodeUnicode } from "./utils";
 import { HoveringToolbar } from "./HoveringToolbar";
 
 function App() {
-  let lastContent = ""
+  let lastContent = "";
   let sendbuffer = 0;
   let saveTimeout;
   // Initialize the Slate editor with React bindings, history tracking, and custom layout
   const handleSave = async () => {
-    console.log("saving to note " + window.current_noteid)
-    console.log(lastContent)
-    if(lastContent == "") {
-      console.log("nothing new")
-    }
-    else {
+    console.log("saving to note " + window.current_noteid);
+    console.log(lastContent);
+    if (lastContent == "") {
+      console.log("nothing new");
+    } else {
       try {
         const response = await fetch("/savesheet", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text: b64EncodeUnicode(lastContent), id:window.current_noteid}),
+          body: JSON.stringify({
+            text: b64EncodeUnicode(lastContent),
+            id: window.current_noteid,
+          }),
         });
         const json = await response.json();
         if (json.success) {
-          console.log("saved")
+          console.log("saved");
           // window.location.reload();
           //update save icon to indicate saving
         }
       } catch (error) {
-        alert("Saving failed. Please try again.")
+        alert("Saving failed. Please try again.");
       }
-    };
-  
-    
-  }
+    }
+  };
   const [editor] = useState(() =>
     withLinks(withLayout(withHistory(withReact(createEditor()))))
   );
@@ -73,26 +73,26 @@ function App() {
       <NavigationPanel darkMode={darkMode} editor={editor} />
       <RightPanel darkMode={darkMode} onThemeToggle={toggleDarkMode} />
       {/* Slate editor context provider */}
-      <Slate editor={editor} initialValue={initialValue} id="mainEditor"
-                onChange={value => {
-                  if(Date.now()-sendbuffer > 1000) {
-                    // Save the value to Local Storage.
-                    //send data again
-                    lastContent = JSON.stringify(value)
+      <Slate
+        editor={editor}
+        initialValue={initialValue}
+        id="mainEditor"
+        onChange={(value) => {
+          if (Date.now() - sendbuffer > 1000) {
+            // Save the value to Local Storage.
+            //send data again
+            lastContent = JSON.stringify(value);
 
-                    handleSave()
-                    clearTimeout(saveTimeout)
-                    sendbuffer = Date.now()
-                    
-                  }
-                  else {
-                    clearTimeout(saveTimeout)
-                    saveTimeout = setTimeout(handleSave, 1000)
-                  }
-                  lastContent = JSON.stringify(value)
-                }}      
+            handleSave();
+            clearTimeout(saveTimeout);
+            sendbuffer = Date.now();
+          } else {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(handleSave, 1000);
+          }
+          lastContent = JSON.stringify(value);
+        }}
       >
-        
         <HoveringToolbar darkMode={darkMode} />
         {/* Main editable area with custom rendering and keyboard shortcuts */}
         <Editable
