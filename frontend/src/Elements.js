@@ -306,22 +306,36 @@ const Note = ({
 
   return (
     <div
-      className="note-item"
+      className={`note-item ${darkMode ? "dark-mode" : ""}`}
       onClick={loadNote}
       style={{
         padding: "12px",
-        backgroundColor: "white",
+        backgroundColor: darkMode ? "#374151" : "white",
+        color: darkMode ? "#f3f4f6" : "#333",
         borderRadius: "6px",
         boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
+        border: darkMode ? "1px solid #4b5563" : "none",
         cursor: "pointer",
-        transition: "transform 0.2s ease",
+        transition: "all 0.3s ease",
         marginBottom: "16px",
       }}
     >
-      <h2 style={{ marginBottom: "8px", fontSize: "1.2rem", color: "#333" }}>
+      <h2
+        style={{
+          marginBottom: "8px",
+          fontSize: "1.2rem",
+          color: darkMode ? "#f3f4f6" : "#333",
+        }}
+      >
         {title}
       </h2>
-      <p style={{ marginBottom: "16px", color: "#555", fontSize: "0.9rem" }}>
+      <p
+        style={{
+          marginBottom: "16px",
+          color: darkMode ? "#d1d5db" : "#555",
+          fontSize: "0.9rem",
+        }}
+      >
         Created on {new Date(timecreated).toDateString()}, last updated{" "}
         {new Date(lastmodified).toDateString()}.
       </p>
@@ -333,10 +347,13 @@ const Note = ({
         }}
       >
         <div
-          className="nav-button hamburger-button note-button"
+          className={`nav-button hamburger-button note-button ${
+            darkMode ? "dark-mode" : ""
+          }`}
           onClick={renameNote}
           style={{
-            backgroundColor: "#e2e8f0",
+            backgroundColor: darkMode ? "#4b5563" : "#e2e8f0",
+            color: darkMode ? "#f3f4f6" : "#333",
             padding: "7px 11px",
             borderRadius: "20px",
             fontWeight: "bold",
@@ -344,17 +361,19 @@ const Note = ({
             boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
             cursor: "pointer",
             transition: "all 0.2s ease",
-            border: "1px solid transparent",
+            border: darkMode ? "1px solid #6b7280" : "1px solid transparent",
           }}
         >
           Rename
         </div>
         <div
-          className="nav-button hamburger-button note-button"
+          className={`nav-button hamburger-button note-button ${
+            darkMode ? "dark-mode" : ""
+          }`}
           onClick={deleteNote}
           style={{
-            backgroundColor: "#ff4d4d",
-            color: "white",
+            backgroundColor: darkMode ? "#ff4d4d" : "#ff4d4d",
+            color: darkMode ? "#f3f4f6" : "white",
             padding: "7px 11px",
             borderRadius: "20px",
             fontWeight: "bold",
@@ -362,7 +381,7 @@ const Note = ({
             boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
             cursor: "pointer",
             transition: "all 0.2s ease",
-            border: "1px solid transparent",
+            border: darkMode ? "1px solid #6b7280" : "1px solid transparent",
           }}
         >
           Delete
