@@ -62,7 +62,7 @@ func saveNote(userid int, noteid int, text string, db *sql.DB) string {
 			fmt.Println("Failed to write to file")
 			return `{"success":false}`
 		}
-		notedb := queryWithNoResponse("UPDATE Notes SET lastmodified=? WHERE id = ?", db, time.Now().UnixMilli(), usrid)
+		notedb := queryWithNoResponse("UPDATE Notes SET lastmodified=? WHERE id = ?", db, time.Now().UnixMilli(), noteid)
 		if !notedb {
 			fmt.Println("Failed to write to database")
 			return `{"success":false}`

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import { b64DecodeUnicode } from "./utils";
 export const HelpPanel = ({ isOpen, darkMode }) => {
   const helpSections = [
     {
@@ -283,7 +283,9 @@ const Note = ({ id, formalname, timecreated, lastmodified, updatelist,editor}) =
       const result = await response.json();
       console.log(result);
       if (result.success == true) {
-        let conversion = atob(result.noteText);
+        window.current_noteid = id
+        console.log("current note id: " + window.current_noteid)
+        let conversion = b64DecodeUnicode(result.noteText);
         console.log(conversion)
         let parsed = JSON.parse(conversion)
         console.log(parsed)
@@ -297,28 +299,70 @@ const Note = ({ id, formalname, timecreated, lastmodified, updatelist,editor}) =
   }
 
   return (
-    <div className="note-item" onClick={loadNote}>
-      <h2>{title}</h2>
-      <p>
-        Created on {new Date(timecreated).toDateString()}, last updated{" "}
-        {new Date(lastmodified).toDateString()}.
-      </p>
-      <div>
-        <div
-          className="nav-button hamburger-button note-button"
-          onClick={renameNote}
-        >
-          Rename
-        </div>
-        <div
-          className="nav-button hamburger-button note-button"
-          onClick={deleteNote}
-          style={{ color: "red" }}
-        >
-          Delete
-        </div>
-      </div>
+<div
+  className="note-item"
+  onClick={loadNote}
+  style={{
+    padding: "12px",
+    backgroundColor: "white",
+    borderRadius: "6px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
+    cursor: "pointer",
+    transition: "transform 0.2s ease",
+    marginBottom: "16px",
+  }}
+>
+  <h2 style={{ marginBottom: "8px", fontSize: "1.2rem", color: "#333" }}>
+    {title}
+  </h2>
+  <p style={{ marginBottom: "16px", color: "#555", fontSize: "0.9rem" }}>
+    Created on {new Date(timecreated).toDateString()}, last updated{" "}
+    {new Date(lastmodified).toDateString()}.
+  </p>
+  <div
+    style={{
+      display: "flex",
+      gap: "10px",
+      justifyContent: "flex-start",
+    }}
+  >
+    <div
+      className="nav-button hamburger-button note-button"
+      onClick={renameNote}
+      style={{
+        backgroundColor: "#e2e8f0",
+        padding: "7px 11px",
+        borderRadius: "20px",
+        fontWeight: "bold",
+        fontSize: "14px",
+        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        transition: "all 0.2s ease",
+        border: "1px solid transparent",
+      }}
+    >
+      Rename
     </div>
+    <div
+      className="nav-button hamburger-button note-button"
+      onClick={deleteNote}
+      style={{
+        backgroundColor: "#ff4d4d",
+        color: "white",
+        padding: "7px 11px",
+        borderRadius: "20px",
+        fontWeight: "bold",
+        fontSize: "14px",
+        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        transition: "all 0.2s ease",
+        border: "1px solid transparent",
+      }}
+    >
+      Delete
+    </div>
+  </div>
+</div>
   );
 };
 
@@ -345,6 +389,7 @@ const NotesList = ({ darkMode, editor }) => {
         window.current_noteid = result.id;
         // Refresh the notes list
         editor.children = initialValue
+        editor.onChange()
           getList();
       }
     } catch (error) {
@@ -403,13 +448,13 @@ const NotesList = ({ darkMode, editor }) => {
 
 const NotesPanel = ({ isOpen, darkMode, editor }) => {
 
-  const handleGroups = () => {
-    console.log("Groups clicked");
-  };
+  // const handleGroups = () => {
+  //   console.log("Groups clicked");
+  // };
 
-  const handleShare = () => {
-    console.log("Share clicked");
-  };
+  // const handleShare = () => {
+  //   console.log("Share clicked");
+  // };
 
   return (
     <div
@@ -418,8 +463,8 @@ const NotesPanel = ({ isOpen, darkMode, editor }) => {
       }`}
     >
       <div className="notes-panel-buttons">
-        <NavButton text="Groups" onClick={handleGroups} darkMode={darkMode} />
-        <NavButton text="Share" onClick={handleShare} darkMode={darkMode} />
+        {/* <NavButton text="Groups" onClick={handleGroups} darkMode={darkMode} />
+        <NavButton text="Share" onClick={handleShare} darkMode={darkMode} /> */}
       </div>
 
         <NotesList darkMode={darkMode} editor={editor}/>

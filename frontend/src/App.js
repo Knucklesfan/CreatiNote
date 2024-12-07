@@ -12,7 +12,7 @@ import {
   initialValue,
   withLayout,
 } from "./Elements";
-import { toggleMark, insertList, withLinks } from "./utils";
+import { toggleMark, insertList, withLinks, b64EncodeUnicode} from "./utils";
 import { HoveringToolbar } from "./HoveringToolbar";
 
 function App() {
@@ -33,7 +33,7 @@ function App() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text: btoa(lastContent), id:window.current_noteid}),
+          body: JSON.stringify({ text: b64EncodeUnicode(lastContent), id:window.current_noteid}),
         });
         const json = await response.json();
         if (json.success) {
