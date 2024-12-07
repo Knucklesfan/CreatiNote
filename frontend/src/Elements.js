@@ -419,8 +419,8 @@ const NotesPanel = ({ isOpen, darkMode, editor }) => {
       }`}
     >
       <div className="notes-panel-buttons">
-        <NavButton text="Groups" onClick={handleGroups} darkMode={darkMode} />
-        <NavButton text="Share" onClick={handleShare} darkMode={darkMode} />
+        {/* <NavButton text="Groups" onClick={handleGroups} darkMode={darkMode} />
+        <NavButton text="Share" onClick={handleShare} darkMode={darkMode} /> */}
       </div>
 
         <NotesList darkMode={darkMode} editor={editor}/>
