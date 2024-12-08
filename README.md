@@ -1,6 +1,6 @@
 # CreatiNote
 
-A decentralized, encrypted, self-hosted note-taking app designed for collaboration and entertainment.
+A self-hosted notes taking app designed for speed and efficiency.
 
 ## Current Work
 
